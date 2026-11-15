@@ -1,94 +1,344 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ACPS HUB Student Portal</title>
+<meta name="description" content="GPA calculator, reminders, timetable and budget for students.">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <style>
-:root{--bg:#f6f8f7;--card:#fff;--tx:#16241d;--mut:#5d6e65;--ac:#0f7a55;--ac2:#e6f4ee;--bd:#dbe4df;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101815;--card:#18231e;--tx:#e8f1ec;--mut:#92a69b;--ac:#3fcf9b;--ac2:#1d3329;--bd:#2a3a33;--bad:#ff7b6b;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#101815;--card:#18231e;--tx:#e8f1ec;--mut:#92a69b;--ac:#3fcf9b;--ac2:#1d3329;--bd:#2a3a33;--bad:#ff7b6b;color-scheme:dark}
-*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.w{max-width:760px;margin:0 auto;padding:16px}
-h1{font-size:1.35rem;margin:0}h2{font-size:1.05rem;margin:0 0 10px}
-.tag{color:var(--mut);font-size:.85rem;margin:2px 0 12px}
-.q{background:var(--ac2);border-radius:10px;padding:10px 12px;font-size:.9rem;margin-bottom:14px}
-nav{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px}
-nav button{flex:0 0 auto;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 14px;border-radius:999px;font:inherit;cursor:pointer}
-nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
-.r{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
-input,select{flex:1 1 120px;min-width:0;padding:9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
-.b{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;cursor:pointer}
-.x{background:none;border:0;color:var(--bad);cursor:pointer;font-size:1.1rem}
-.it{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bd)}
-.it small{color:var(--mut);display:block}
-.big{font-size:2rem;font-weight:700;color:var(--ac)}
-.pos{color:var(--ac)}.neg{color:var(--bad)}
-.n{color:var(--mut);font-size:.8rem}
-.sec{display:none}.sec.on{display:block}
+:root{--accent:#34d399;--accent-ink:#052e1f;--bg:#0b1220;--bg2:#111a2e;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--text:#f1f5f9;--muted:#94a3b8;--danger:#f87171;--radius:18px}
+:root[data-theme=light]{--bg:#f1f5f9;--bg2:#e2e8f0;--card:#ffffff;--line:rgba(15,23,42,.12);--text:#0f172a;--muted:#475569;--accent-ink:#fff}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);background:radial-gradient(1200px 600px at 10% -10%,color-mix(in srgb,var(--accent) 22%,transparent),transparent),var(--bg);background-attachment:fixed;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:860px;margin:0 auto;padding:16px}
+.hide{display:none!important}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;backdrop-filter:blur(10px)}
+h1{font-size:1.5rem}h2{font-size:1.15rem;margin-bottom:12px}
+.muted{color:var(--muted);font-size:.9rem}
+input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg2) 70%,transparent);outline:none}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);font-weight:600}
+.btn.sm{padding:8px 12px;font-size:.85rem}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid var(--line);padding:6px 10px;font-size:.8rem}
+.row{display:grid;gap:10px}
+.row.c4{grid-template-columns:2fr 1fr 1fr auto}
+.row.c5{grid-template-columns:1.2fr 1fr 1fr 2fr auto}
+.row.c3{grid-template-columns:1fr 1fr auto}
+.row.c2{grid-template-columns:2fr 1.4fr auto}
+@media(max-width:640px){.row.c4,.row.c5,.row.c3,.row.c2{grid-template-columns:1fr 1fr}.row .btn{grid-column:1/-1}}
+/* auth */
+#auth{min-height:100vh;display:grid;place-items:center;padding:16px}
+.auth-box{width:100%;max-width:420px}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#38bdf8);display:grid;place-items:center;font-weight:900;color:#06201a;font-size:1.1rem}
+.tabs2{display:flex;background:var(--bg2);border-radius:12px;padding:4px;margin:16px 0}
+.tabs2 button{flex:1;border:0;background:none;padding:10px;border-radius:9px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tabs2 button.on{background:var(--accent);color:var(--accent-ink)}
+form{display:grid;gap:12px}
+label{font-size:.8rem;color:var(--muted);display:grid;gap:6px}
+.err{color:var(--danger);font-size:.85rem;min-height:1.1em}
+/* app */
+header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.who{display:flex;align-items:center;gap:10px}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#a78bfa);display:grid;place-items:center;font-weight:800;color:#06201a}
+.quote{margin:12px 0;padding:12px 16px;border-radius:14px;background:color-mix(in srgb,var(--accent) 18%,transparent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);font-weight:600}
+nav.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
+nav.tabs button{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:10px 18px;cursor:pointer;font-weight:600}
+nav.tabs button.on{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--bg2);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font-size:1.7rem;color:var(--accent)}
+.list{display:grid;gap:8px;margin-top:14px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--bg2)}
+.item.done .t{text-decoration:line-through;opacity:.55}
+.item .t{display:grid;gap:2px}
+.pill{font-size:.72rem;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--accent) 25%,transparent)}
+.inc{color:var(--accent)}.exp{color:var(--danger)}
+.dayh{margin:14px 0 6px;font-weight:700;color:var(--accent)}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.sw{width:32px;height:32px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.sw.on{border-color:var(--text)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 0 8px;border-top:1px solid var(--line);margin-top:24px}
 </style>
 </head>
 <body>
-<div class="w">
-<h1>ACPS HUB Student Portal</h1>
-<div class="tag">Building smart solutions for better communities</div>
-<div class="q" id="quote"></div>
-<nav id="nav"></nav>
 
-<section class="sec" id="gpa"><div class="c">
-<h2>GPA calculator</h2>
-<div class="r"><input id="gn" placeholder="Unit name"><input id="gc" type="number" min="1" step="0.5" placeholder="Credit hrs"><input id="gm" type="number" min="0" max="100" placeholder="Marks %"><button class="b" onclick="addC()">Add</button></div>
-<div id="gl"></div>
-<div class="it"><div><div class="n">Your GPA (4.0 scale)</div><div class="big" id="gv">0.00</div></div><div class="n" id="gcl"></div></div>
-<div class="n">Scale used: 70+ = A (4), 60–69 = B (3), 50–59 = C (2), 40–49 = D (1), below 40 = E (0). Check it against your university’s regulations.</div>
-</div></section>
+<!-- AUTH -->
+<section id="auth" class="hide">
+  <div class="card auth-box">
+    <div class="brand"><div class="logo">AH</div><div><h1>ACPS HUB</h1><div class="muted">Building smart solutions for better communities</div></div></div>
+    <div class="tabs2"><button id="tabLogin" class="on" type="button">Log in</button><button id="tabSignup" type="button">Sign up</button></div>
+    <form id="authForm" autocomplete="on">
+      <label id="nameWrap" class="hide">Full name<input id="aName" autocomplete="name" placeholder="e.g. Allan Wanga"></label>
+      <label>Email<input id="aEmail" type="email" autocomplete="email" placeholder="you@school.ac.ke" required></label>
+      <label>Password<input id="aPass" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required></label>
+      <label id="confWrap" class="hide">Confirm password<input id="aConf" type="password" autocomplete="new-password" placeholder="Repeat password"></label>
+      <div class="err" id="aErr"></div>
+      <button class="btn" id="aSubmit" type="submit">Log in</button>
+    </form>
+    <p class="muted" style="margin-top:14px">Accounts are stored on this device only. Different device = create a new account.</p>
+  </div>
+</section>
 
-<section class="sec" id="exam"><div class="c">
-<h2>Exam and CAT reminders</h2>
-<div class="r"><input id="en" placeholder="Unit / paper"><select id="et"><option>CAT</option><option>Exam</option><option>Assignment</option></select><input id="ed" type="date"><button class="b" onclick="addE()">Add</button></div>
-<div id="el"></div>
-</div></section>
+<!-- APP -->
+<main id="app" class="wrap hide">
+  <header class="top">
+    <div class="who"><div class="avatar" id="avatar">A</div><div><b id="hello">Hello</b><div class="muted">ACPS HUB Student Portal</div></div></div>
+    <div style="display:flex;gap:8px"><button class="btn ghost sm hide" id="installBtn">⬇ Install app</button><button class="btn ghost sm" id="logoutBtn">Log out</button></div>
+  </header>
+  <div class="quote" id="quote"></div>
+  <nav class="tabs" id="tabs">
+    <button data-t="gpa" class="on">GPA</button><button data-t="rem">Reminders</button><button data-t="tt">Timetable</button><button data-t="bud">Budget</button><button data-t="set">Settings</button>
+  </nav>
 
-<section class="sec" id="tt"><div class="c">
-<h2>Timetable</h2>
-<div class="r"><select id="td"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select><input id="ts" type="time"><input id="te" type="time"><input id="tu" placeholder="Unit"><input id="tv" placeholder="Venue"><button class="b" onclick="addT()">Add</button></div>
-<div id="tl"></div>
-</div></section>
+  <section id="p-gpa" class="card">
+    <h2>GPA calculator</h2>
+    <form class="row c4" id="gpaForm"><input id="gUnit" placeholder="Unit name" required><input id="gCr" type="number" min="1" max="20" step="1" placeholder="Credit hrs" required><input id="gMk" type="number" min="0" max="100" step="0.1" placeholder="Marks %" required><button class="btn">Add</button></form>
+    <div class="stats"><div class="stat"><span class="muted">Your GPA (4.0 scale)</span><b id="gpaVal">0.00</b></div><div class="stat"><span class="muted">Credit hours</span><b id="gpaCr">0</b></div><div class="stat"><span class="muted">Class</span><b id="gpaCls" style="font-size:1.1rem">—</b></div></div>
+    <div class="list" id="gpaList"></div>
+    <p class="muted" style="margin-top:12px">Scale used: 70+ = A (4), 60–69 = B (3), 50–59 = C (2), 40–49 = D (1), below 40 = E (0). Check it against your university's regulations.</p>
+  </section>
 
-<section class="sec" id="bud"><div class="c">
-<h2>Budget tracker</h2>
-<div class="r"><input id="bn" placeholder="Description"><input id="ba" type="number" min="0" placeholder="Amount (KES)"><select id="bk"><option value="in">Income</option><option value="out">Expense</option></select><button class="b" onclick="addB()">Add</button></div>
-<div id="bl"></div>
-<div class="it"><div><div class="n">Balance (KES)</div><div class="big" id="bv">0</div></div><div class="n" id="bs"></div></div>
-</div></section>
+  <section id="p-rem" class="card hide">
+    <h2>Reminders</h2>
+    <form class="row c3" id="remForm"><input id="rText" placeholder="What do you need to remember?" required style="grid-column:span 1"><input id="rWhen" type="datetime-local" required><button class="btn">Add</button></form>
+    <p class="muted" id="notifHint" style="margin-top:10px"></p>
+    <div class="list" id="remList"></div>
+  </section>
 
-<div class="n">Your data is saved only in this browser on this device.</div>
-<footer class="n" style="text-align:center;margin-top:18px;padding-top:12px;border-top:1px solid var(--bd)">© 2026 ACPS HUB. All rights reserved.<br>Developed by Allan.<br>Building smart solutions for better communities through technology and innovation.</footer>
-</div>
+  <section id="p-tt" class="card hide">
+    <h2>Timetable</h2>
+    <form class="row c5" id="ttForm"><select id="tDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select><input id="tStart" type="time" required><input id="tEnd" type="time" required><input id="tUnit" placeholder="Unit / room" required><button class="btn">Add</button></form>
+    <div id="ttList"></div>
+  </section>
+
+  <section id="p-bud" class="card hide">
+    <h2>Budget</h2>
+    <form class="row c4" id="budForm"><input id="bDesc" placeholder="Description" required><select id="bType"><option value="exp">Expense</option><option value="inc">Income</option></select><input id="bAmt" type="number" min="0" step="0.01" placeholder="Amount (KES)" required><button class="btn">Add</button></form>
+    <div class="stats"><div class="stat"><span class="muted">Income</span><b class="inc" id="bInc">0</b></div><div class="stat"><span class="muted">Expenses</span><b class="exp" id="bExp">0</b></div><div class="stat"><span class="muted">Balance</span><b id="bBal">0</b></div></div>
+    <div class="list" id="budList"></div>
+  </section>
+
+  <section id="p-set" class="card hide">
+    <h2>Settings</h2>
+    <div class="list">
+      <div class="item"><div class="t"><b>Notifications</b><span class="muted">Get alerts for reminders and 15 min before classes</span></div><button class="btn sm" id="notifBtn">Enable</button></div>
+      <div class="item"><div class="t"><b>Theme</b><span class="muted">Dark or light</span></div><button class="btn ghost sm" id="themeBtn">Toggle</button></div>
+      <div class="item" style="display:grid"><div class="t"><b>Accent colour</b></div><div class="swatches" id="swatches"></div></div>
+      <div class="item"><div class="t"><b>Install app</b><span class="muted" id="installHint">Add ACPS HUB to your home screen / desktop</span></div><button class="btn sm" id="installBtn2">Install</button></div>
+      <div class="item"><div class="t"><b>Export my data</b><span class="muted">Download a backup (JSON)</span></div><button class="btn ghost sm" id="exportBtn">Export</button></div>
+      <div class="item"><div class="t"><b>Delete account</b><span class="muted">Removes this account and its data from this device</span></div><button class="btn danger" id="delBtn">Delete</button></div>
+    </div>
+  </section>
+
+  <p class="muted" style="margin-top:14px">Your data is saved only in this browser on this device.</p>
+  <footer>© 2026 ACPS HUB. All rights reserved.<br>Developed by Allan.<br>Building smart solutions for better communities through technology and innovation.</footer>
+</main>
+
 <script>
-var Q=["Small steps every day build big results.","Discipline beats motivation. Show up today.","Your future self is counting on today’s effort.","Learn it, build it, share it.","Progress, not perfection."];
-var S={c:[],e:[],t:[],b:[]};
-try{var raw=localStorage.getItem("acps-portal");if(raw)S=Object.assign(S,JSON.parse(raw))}catch(x){}
-function save(){try{localStorage.setItem("acps-portal",JSON.stringify(S))}catch(x){}}
-function $(i){return document.getElementById(i)}
-function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
-function gp(m){return m>=70?["A",4]:m>=60?["B",3]:m>=50?["C",2]:m>=40?["D",1]:["E",0]}
-$("quote").textContent=Q[new Date().getDate()%Q.length];
-var tabs=[["gpa","GPA"],["exam","Reminders"],["tt","Timetable"],["bud","Budget"]];
-tabs.forEach(function(t){var b=document.createElement("button");b.textContent=t[1];b.dataset.k=t[0];b.onclick=function(){show(t[0])};$("nav").appendChild(b)});
-function show(k){tabs.forEach(function(t){$(t[0]).classList.toggle("on",t[0]==k)});[].forEach.call($("nav").children,function(b){b.classList.toggle("on",b.dataset.k==k)})}
-function addC(){var n=$("gn").value.trim(),c=parseFloat($("gc").value),m=parseFloat($("gm").value);if(!n||!(c>0)||isNaN(m)||m<0||m>100)return;S.c.push({n:n,c:c,m:m});$("gn").value=$("gc").value=$("gm").value="";save();rC()}
-function rC(){var tp=0,tc=0;$("gl").innerHTML=S.c.map(function(x,i){var g=gp(x.m);tp+=g[1]*x.c;tc+=x.c;return '<div class="it"><div>'+esc(x.n)+'<small>'+x.c+' hrs · '+x.m+'% · Grade '+g[0]+'</small></div><button class="x" onclick="del(\'c\','+i+')">×</button></div>'}).join("");$("gv").textContent=tc?(tp/tc).toFixed(2):"0.00";$("gcl").textContent=tc+" credit hrs"}
-function addE(){var n=$("en").value.trim(),d=$("ed").value;if(!n||!d)return;S.e.push({n:n,t:$("et").value,d:d});$("en").value="";save();rE()}
-function rE(){var now=new Date();now.setHours(0,0,0,0);var l=S.e.map(function(x,i){return Object.assign({i:i},x)}).sort(function(a,b){return a.d<b.d?-1:1});$("el").innerHTML=l.map(function(x){var dd=Math.round((new Date(x.d+"T00:00:00")-now)/864e5);var lab=dd<0?'<span class="n">Passed</span>':dd==0?'<span class="neg">Today</span>':'<span class="'+(dd<=3?'neg':'pos')+'">'+dd+' day'+(dd>1?'s':'')+' left</span>';return '<div class="it"><div>'+esc(x.n)+'<small>'+x.t+' · '+x.d+'</small></div><div>'+lab+' <button class="x" onclick="del(\'e\','+x.i+')">×</button></div></div>'}).join("")}
-function addT(){var u=$("tu").value.trim(),s=$("ts").value;if(!u||!s)return;S.t.push({d:$("td").value,s:s,e:$("te").value,u:u,v:$("tv").value.trim()});$("tu").value=$("tv").value="";save();rT()}
-function rT(){var days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];var l=S.t.map(function(x,i){return Object.assign({i:i},x)}).sort(function(a,b){return days.indexOf(a.d)-days.indexOf(b.d)||(a.s<b.s?-1:1)});$("tl").innerHTML=l.map(function(x){return '<div class="it"><div>'+esc(x.u)+'<small>'+x.d+' · '+x.s+(x.e?'–'+x.e:'')+(x.v?' · '+esc(x.v):'')+'</small></div><button class="x" onclick="del(\'t\','+x.i+')">×</button></div>'}).join("")}
-function addB(){var n=$("bn").value.trim(),a=parseFloat($("ba").value);if(!n||!(a>0))return;S.b.push({n:n,a:a,k:$("bk").value});$("bn").value=$("ba").value="";save();rB()}
-function rB(){var i=0,o=0;$("bl").innerHTML=S.b.map(function(x,j){if(x.k=="in")i+=x.a;else o+=x.a;return '<div class="it"><div>'+esc(x.n)+'</div><div class="'+(x.k=="in"?'pos':'neg')+'">'+(x.k=="in"?'+':'−')+x.a.toLocaleString()+' <button class="x" onclick="del(\'b\','+j+')">×</button></div></div>'}).join("");var b=i-o;$("bv").textContent=b.toLocaleString();$("bv").className="big "+(b<0?"neg":"");$("bs").textContent="In "+i.toLocaleString()+" · Out "+o.toLocaleString()}
-function del(k,i){S[k].splice(i,1);save();rC();rE();rT();rB()}
-rC();rE();rT();rB();show("gpa");
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},set(k,v){localStorage.setItem(k,JSON.stringify(v))}};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const QUOTES=["Discipline beats motivation. Show up today.","Small steps every day add up to big results.","Study now, celebrate later.","Consistency is your superpower.","Progress, not perfection."];
+const ACCENTS=["#34d399","#38bdf8","#a78bfa","#fb923c","#f472b6","#facc15"];
+
+let users=LS.get('acps_users',{}), email=LS.get('acps_session',null), D=null, mode='login', deferredInstall=null, swReg=null;
+
+/* ---------- toast ---------- */
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+
+/* ---------- password hashing ---------- */
+async function hashPw(pw,salt){
+  try{const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pw));return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+  catch{return btoa(unescape(encodeURIComponent(salt+':'+pw)))}
+}
+
+/* ---------- auth ---------- */
+function setMode(m){
+  mode=m;const s=m==='signup';
+  $('#tabLogin').classList.toggle('on',!s);$('#tabSignup').classList.toggle('on',s);
+  $('#nameWrap').classList.toggle('hide',!s);$('#confWrap').classList.toggle('hide',!s);
+  $('#aSubmit').textContent=s?'Create account':'Log in';
+  $('#aPass').autocomplete=s?'new-password':'current-password';
+  $('#aErr').textContent='';
+}
+$('#tabLogin').onclick=()=>setMode('login');$('#tabSignup').onclick=()=>setMode('signup');
+$('#authForm').onsubmit=async e=>{
+  e.preventDefault();
+  const em=$('#aEmail').value.trim().toLowerCase(), pw=$('#aPass').value, err=$('#aErr');
+  err.textContent='';
+  if(mode==='signup'){
+    const name=$('#aName').value.trim();
+    if(!name)return err.textContent='Please enter your name.';
+    if(pw.length<6)return err.textContent='Password must be at least 6 characters.';
+    if(pw!==$('#aConf').value)return err.textContent='Passwords do not match.';
+    if(users[em])return err.textContent='An account with this email already exists on this device.';
+    const salt=uid();users[em]={name,salt,hash:await hashPw(pw,salt)};
+    LS.set('acps_users',users);startSession(em);toast('Welcome, '+name.split(' ')[0]+'!');
+  }else{
+    const u=users[em];
+    if(!u||u.hash!==await hashPw(pw,u.salt))return err.textContent='Wrong email or password.';
+    startSession(em);
+  }
+};
+function startSession(em){email=em;LS.set('acps_session',em);$('#authForm').reset();showApp()}
+$('#logoutBtn').onclick=()=>{localStorage.removeItem('acps_session');email=null;D=null;showAuth()};
+function showAuth(){$('#app').classList.add('hide');$('#auth').classList.remove('hide');setMode('login')}
+
+/* ---------- data ---------- */
+const dkey=()=>'acps_data_'+email;
+function load(){D=LS.get(dkey(),null)||{gpa:[],rem:[],tt:[],bud:[],set:{accent:ACCENTS[0],theme:'dark'},fired:{}}; D.set=D.set||{accent:ACCENTS[0],theme:'dark'}; D.fired=D.fired||{}}
+function save(){LS.set(dkey(),D)}
+function applyTheme(){
+  const r=document.documentElement;r.style.setProperty('--accent',D.set.accent);r.dataset.theme=D.set.theme;
+  document.querySelector('meta[name=theme-color]').content=D.set.theme==='light'?'#f1f5f9':'#0f172a';
+}
+
+/* ---------- app shell ---------- */
+function showApp(){
+  load();applyTheme();
+  $('#auth').classList.add('hide');$('#app').classList.remove('hide');
+  const name=users[email]?.name||'Student';
+  $('#hello').textContent='Hello, '+name.split(' ')[0];$('#avatar').textContent=name[0].toUpperCase();
+  $('#quote').textContent=QUOTES[new Date().getDate()%QUOTES.length];
+  renderAll();buildSwatches();updateNotifUI();tab('gpa');
+}
+function tab(t){
+  $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  ['gpa','rem','tt','bud','set'].forEach(k=>$('#p-'+k).classList.toggle('hide',k!==t));
+}
+$('#tabs').onclick=e=>{const b=e.target.closest('button');if(b)tab(b.dataset.t)};
+function renderAll(){rGpa();rRem();rTT();rBud()}
+
+/* ---------- GPA ---------- */
+const pts=m=>m>=70?4:m>=60?3:m>=50?2:m>=40?1:0;
+const grade=m=>m>=70?'A':m>=60?'B':m>=50?'C':m>=40?'D':'E';
+$('#gpaForm').onsubmit=e=>{e.preventDefault();
+  D.gpa.push({id:uid(),unit:$('#gUnit').value.trim(),cr:+$('#gCr').value,mk:+$('#gMk').value});save();e.target.reset();rGpa()};
+function rGpa(){
+  const tc=D.gpa.reduce((a,x)=>a+x.cr,0), tp=D.gpa.reduce((a,x)=>a+x.cr*pts(x.mk),0), g=tc?tp/tc:0;
+  $('#gpaVal').textContent=g.toFixed(2);$('#gpaCr').textContent=tc;
+  $('#gpaCls').textContent=!tc?'—':g>=3.5?'First Class':g>=3?'Second Upper':g>=2?'Second Lower':g>=1?'Pass':'Fail';
+  $('#gpaList').innerHTML=D.gpa.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.cr} hrs · ${x.mk}% · <span class="pill">${grade(x.mk)}</span></span></div><button class="btn danger" data-del="gpa:${x.id}">Remove</button></div>`).join('')||'<p class="muted">No units yet. Add your first one above.</p>';
+}
+
+/* ---------- Reminders ---------- */
+$('#remForm').onsubmit=e=>{e.preventDefault();
+  D.rem.push({id:uid(),text:$('#rText').value.trim(),when:$('#rWhen').value,done:false});save();e.target.reset();rRem();scheduleTriggers();
+  if('Notification' in window&&Notification.permission==='default')toast('Enable notifications in Settings to get alerts');};
+function rRem(){
+  const L=[...D.rem].sort((a,b)=>a.when.localeCompare(b.when));
+  $('#remList').innerHTML=L.map(x=>{const late=!x.done&&new Date(x.when)<new Date();
+    return `<div class="item ${x.done?'done':''}"><div class="t"><b>${esc(x.text)}</b><span class="muted">${new Date(x.when).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})}${late?' · <span class="exp">overdue</span>':''}</span></div><div style="display:flex;gap:6px"><button class="btn ghost sm" data-done="${x.id}">${x.done?'Undo':'Done'}</button><button class="btn danger" data-del="rem:${x.id}">✕</button></div></div>`}).join('')||'<p class="muted">No reminders yet.</p>';
+}
+
+/* ---------- Timetable ---------- */
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+$('#ttForm').onsubmit=e=>{e.preventDefault();
+  D.tt.push({id:uid(),day:$('#tDay').value,start:$('#tStart').value,end:$('#tEnd').value,unit:$('#tUnit').value.trim()});save();
+  $('#tStart').value=$('#tEnd').value=$('#tUnit').value='';rTT()};
+function rTT(){
+  $('#ttList').innerHTML=DAYS.map(d=>{const L=D.tt.filter(x=>x.day===d).sort((a,b)=>a.start.localeCompare(b.start));
+    return L.length?`<div class="dayh">${d}</div><div class="list" style="margin-top:0">${L.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.start} – ${x.end}</span></div><button class="btn danger" data-del="tt:${x.id}">✕</button></div>`).join('')}</div>`:''}).join('')||'<p class="muted" style="margin-top:12px">No classes yet.</p>';
+}
+
+/* ---------- Budget ---------- */
+$('#budForm').onsubmit=e=>{e.preventDefault();
+  D.bud.push({id:uid(),desc:$('#bDesc').value.trim(),type:$('#bType').value,amt:+$('#bAmt').value,date:new Date().toISOString()});save();e.target.reset();rBud()};
+const kes=n=>'KES '+n.toLocaleString(undefined,{maximumFractionDigits:2});
+function rBud(){
+  const inc=D.bud.filter(x=>x.type==='inc').reduce((a,x)=>a+x.amt,0), ex=D.bud.filter(x=>x.type==='exp').reduce((a,x)=>a+x.amt,0);
+  $('#bInc').textContent=kes(inc);$('#bExp').textContent=kes(ex);$('#bBal').textContent=kes(inc-ex);
+  $('#bBal').style.color=inc-ex<0?'var(--danger)':'var(--accent)';
+  $('#budList').innerHTML=[...D.bud].reverse().map(x=>`<div class="item"><div class="t"><b>${esc(x.desc)}</b><span class="muted">${new Date(x.date).toLocaleDateString()}</span></div><div style="display:flex;gap:10px;align-items:center"><b class="${x.type}">${x.type==='inc'?'+':'−'}${kes(x.amt)}</b><button class="btn danger" data-del="bud:${x.id}">✕</button></div></div>`).join('')||'<p class="muted">No transactions yet.</p>';
+}
+
+/* ---------- delete / done (delegated) ---------- */
+document.addEventListener('click',e=>{
+  const d=e.target.closest('[data-del]');
+  if(d){const [k,id]=d.dataset.del.split(':');D[k]=D[k].filter(x=>x.id!==id);save();renderAll();return}
+  const n=e.target.closest('[data-done]');
+  if(n){const r=D.rem.find(x=>x.id===n.dataset.done);if(r){r.done=!r.done;save();rRem()}}
+});
+
+/* ---------- Settings ---------- */
+function buildSwatches(){
+  $('#swatches').innerHTML=ACCENTS.map(c=>`<button class="sw ${c===D.set.accent?'on':''}" style="background:${c}" data-c="${c}" aria-label="Accent ${c}"></button>`).join('');
+}
+$('#swatches').onclick=e=>{const b=e.target.closest('.sw');if(!b)return;D.set.accent=b.dataset.c;save();applyTheme();buildSwatches()};
+$('#themeBtn').onclick=()=>{D.set.theme=D.set.theme==='dark'?'light':'dark';save();applyTheme()};
+$('#exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify({user:users[email]?.name,email,data:D},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acps-hub-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('#delBtn').onclick=()=>{
+  if(!confirm('Delete this account and all its data from this device? This cannot be undone.'))return;
+  localStorage.removeItem(dkey());delete users[email];LS.set('acps_users',users);localStorage.removeItem('acps_session');email=null;showAuth()};
+
+/* ---------- Notifications ---------- */
+function updateNotifUI(){
+  const ok='Notification' in window, p=ok?Notification.permission:'unsupported';
+  $('#notifBtn').textContent=p==='granted'?'Enabled ✓':'Enable';$('#notifBtn').disabled=p==='granted'||p==='unsupported';
+  $('#notifHint').textContent=p==='granted'?'🔔 Notifications are on. Keep the app installed or open for the most reliable alerts.':p==='denied'?'Notifications are blocked in your browser settings for this site.':p==='unsupported'?'This browser does not support notifications.':'Turn on notifications in Settings to be alerted when a reminder is due.';
+}
+$('#notifBtn').onclick=async()=>{
+  if(!('Notification' in window))return;
+  const p=await Notification.requestPermission();updateNotifUI();
+  if(p==='granted'){notify('Notifications on ✅','ACPS HUB will alert you about reminders and classes.','welcome');scheduleTriggers()}
+};
+async function notify(title,body,tag){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const opts={body,tag,icon:'icon-192.png',badge:'icon-192.png',vibrate:[120,60,120]};
+  try{const r=swReg||await navigator.serviceWorker.ready;await r.showNotification(title,opts)}catch{try{new Notification(title,opts)}catch{}}
+}
+function tick(){
+  if(!D||!email)return;const now=new Date();let changed=false;
+  D.rem.forEach(r=>{if(!r.done&&!D.fired['r'+r.id]&&new Date(r.when)<=now){D.fired['r'+r.id]=1;changed=true;notify('⏰ Reminder',r.text,'r'+r.id)}});
+  const dn=DAYS[(now.getDay()+6)%7], today=now.toISOString().slice(0,10);
+  D.tt.filter(c=>c.day===dn).forEach(c=>{
+    const [h,m]=c.start.split(':').map(Number), st=new Date(now);st.setHours(h,m,0,0);
+    const diff=(st-now)/60000, key='c'+c.id+today;
+    if(diff<=15&&diff>0&&!D.fired[key]){D.fired[key]=1;changed=true;notify('📚 Class soon',c.unit+' starts at '+c.start,key)}
+  });
+  if(changed){save();rRem()}
+}
+/* Where supported (Chromium), schedule notifications that can fire even if the tab is closed */
+async function scheduleTriggers(){
+  try{
+    if(!('showNotification' in ServiceWorkerRegistration.prototype)||typeof TimestampTrigger==='undefined'||Notification.permission!=='granted')return;
+    const r=swReg||await navigator.serviceWorker.ready;
+    for(const n of await r.getNotifications({includeTriggered:false}))if(n.showTrigger)n.close();
+    for(const x of D.rem){const t=new Date(x.when).getTime();
+      if(!x.done&&t>Date.now())await r.showNotification('⏰ Reminder',{body:x.text,tag:'t'+x.id,icon:'icon-192.png',badge:'icon-192.png',showTrigger:new TimestampTrigger(t)})}
+  }catch{}
+}
+setInterval(tick,15000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
+
+/* ---------- Install (PWA) ---------- */
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hide')});
+async function doInstall(){
+  if(deferredInstall){deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#installBtn').classList.add('hide')}
+  else if(matchMedia('(display-mode: standalone)').matches)toast('Already installed ✓');
+  else if(/iphone|ipad/i.test(navigator.userAgent))alert('On iPhone/iPad: tap the Share button, then "Add to Home Screen".');
+  else alert('Open your browser menu (⋮) and choose "Install app" or "Add to Home screen".');
+}
+$('#installBtn').onclick=$('#installBtn2').onclick=doInstall;
+window.addEventListener('appinstalled',()=>{$('#installBtn').classList.add('hide');toast('Installed 🎉')});
+
+/* ---------- boot ---------- */
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').then(r=>swReg=r).catch(()=>{});
+if(email&&users[email])showApp();else showAuth();
 </script>
 </body>
 </html>
