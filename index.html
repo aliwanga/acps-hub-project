@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ACPS HUB Student Portal</title>
-<meta name="description" content="GPA calculator, reminders, timetable and budget for students.">
+<meta name="description" content="GPA calculator, assignments, reminders, timetable, budget and focus timer for students.">
 <meta name="theme-color" content="#0f172a">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -12,29 +12,34 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
-:root{--accent:#34d399;--accent-ink:#052e1f;--bg:#0b1220;--bg2:#111a2e;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--text:#f1f5f9;--muted:#94a3b8;--danger:#f87171;--radius:18px}
+:root{--accent:#34d399;--accent-ink:#052e1f;--bg:#0b1220;--bg2:#111a2e;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--text:#f1f5f9;--muted:#94a3b8;--danger:#f87171;--warn:#fbbf24;--radius:18px}
 :root[data-theme=light]{--bg:#f1f5f9;--bg2:#e2e8f0;--card:#ffffff;--line:rgba(15,23,42,.12);--text:#0f172a;--muted:#475569;--accent-ink:#fff}
 *{box-sizing:border-box;margin:0}
 html,body{min-height:100%}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);background:radial-gradient(1200px 600px at 10% -10%,color-mix(in srgb,var(--accent) 22%,transparent),transparent),var(--bg);background-attachment:fixed;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 button,input,select{font:inherit;color:inherit}
-.wrap{max-width:860px;margin:0 auto;padding:16px}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
 .hide{display:none!important}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;backdrop-filter:blur(10px)}
-h1{font-size:1.5rem}h2{font-size:1.15rem;margin-bottom:12px}
+h1{font-size:1.5rem}h2{font-size:1.15rem;margin-bottom:12px}h3{font-size:.95rem;margin-bottom:8px}
 .muted{color:var(--muted);font-size:.9rem}
-input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg2) 70%,transparent);outline:none}
+input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg2) 70%,transparent);outline:none;min-width:0}
+select option{background:var(--bg2);color:var(--text)}
 input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
 .btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
 .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);font-weight:600}
 .btn.sm{padding:8px 12px;font-size:.85rem}
 .btn.danger{background:transparent;color:var(--danger);border:1px solid var(--line);padding:6px 10px;font-size:.8rem}
+.btn:disabled{opacity:.5;cursor:default}
 .row{display:grid;gap:10px}
 .row.c4{grid-template-columns:2fr 1fr 1fr auto}
 .row.c5{grid-template-columns:1.2fr 1fr 1fr 2fr auto}
 .row.c3{grid-template-columns:1fr 1fr auto}
-.row.c2{grid-template-columns:2fr 1.4fr auto}
-@media(max-width:640px){.row.c4,.row.c5,.row.c3,.row.c2{grid-template-columns:1fr 1fr}.row .btn{grid-column:1/-1}}
+.row.c4b{grid-template-columns:repeat(4,1fr)}
+.row.c4b .s2{grid-column:span 2}
+.row.c4a{grid-template-columns:2fr 1fr 1fr 1.4fr auto}
+@media(max-width:640px){.row.c4,.row.c5,.row.c3,.row.c4a{grid-template-columns:1fr 1fr}.row.c4b{grid-template-columns:1fr 1fr}.row .btn{grid-column:1/-1}.row .s2{grid-column:1/-1!important}}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 /* auth */
 #auth{min-height:100vh;display:grid;place-items:center;padding:16px}
 .auth-box{width:100%;max-width:420px}
@@ -54,14 +59,18 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:10p
 nav.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
 nav.tabs button{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:10px 18px;cursor:pointer;font-weight:600}
 nav.tabs button.on{background:var(--accent);color:var(--accent-ink);border-color:transparent}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
 .stat{background:var(--bg2);border-radius:14px;padding:12px 14px}
-.stat b{display:block;font-size:1.7rem;color:var(--accent)}
+.stat b{display:block;font-size:1.6rem;color:var(--accent)}
 .list{display:grid;gap:8px;margin-top:14px}
 .item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--bg2)}
-.item.done .t{text-decoration:line-through;opacity:.55}
-.item .t{display:grid;gap:2px}
-.pill{font-size:.72rem;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--accent) 25%,transparent)}
+.item.done .t b{text-decoration:line-through;opacity:.55}
+.item .t{display:grid;gap:2px;min-width:0}
+.item .t b{overflow-wrap:anywhere}
+.acts{display:flex;gap:6px;flex-shrink:0;align-items:center}
+.pill{font-size:.72rem;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--accent) 25%,transparent);white-space:nowrap}
+.pill.late{background:color-mix(in srgb,var(--danger) 28%,transparent);color:var(--danger)}
+.pill.soon{background:color-mix(in srgb,var(--warn) 28%,transparent);color:var(--warn)}
 .inc{color:var(--accent)}.exp{color:var(--danger)}
 .dayh{margin:14px 0 6px;font-weight:700;color:var(--accent)}
 .swatches{display:flex;gap:10px;flex-wrap:wrap}
@@ -69,12 +78,52 @@ nav.tabs button.on{background:var(--accent);color:var(--accent-ink);border-color
 .sw.on{border-color:var(--text)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 0 8px;border-top:1px solid var(--line);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px}
+.sub{background:var(--bg2);border-radius:14px;padding:14px}
+.sub .list{margin-top:8px}
+.sub .item{background:color-mix(in srgb,var(--card) 100%,transparent);border:1px solid var(--line)}
+.bar{height:10px;border-radius:99px;background:var(--bg);overflow:hidden;border:1px solid var(--line)}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.bar.warn>i{background:var(--warn)}.bar.over>i{background:var(--danger)}
+.alert{padding:10px 14px;border-radius:12px;font-weight:600;margin-top:12px;border:1px solid var(--line)}
+.alert.warn{background:color-mix(in srgb,var(--warn) 18%,transparent);border-color:var(--warn)}
+.alert.over{background:color-mix(in srgb,var(--danger) 18%,transparent);border-color:var(--danger)}
+.pie{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.pie svg{width:180px;height:180px;flex-shrink:0}
+.legend{display:grid;gap:6px;flex:1;min-width:180px}
+.legend div{display:flex;align-items:center;gap:8px;font-size:.9rem}
+.legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.legend span:last-child{margin-left:auto;color:var(--muted)}
+.timer{display:grid;place-items:center;margin:10px 0}
+.timer .ring{position:relative;width:240px;height:240px}
+.timer svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.timer .mid b{font-size:3rem;font-variant-numeric:tabular-nums}
+.sel2{display:grid;grid-template-columns:1fr 2fr;gap:10px;max-width:420px;margin:0 auto 10px}
+.tc{text-align:center}
+.cdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:16px}
+.sheet{background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:24px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.bell{font-size:3rem;animation:shake .5s infinite}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(18deg)}75%{transform:rotate(-18deg)}}
+.tour{position:fixed;left:0;right:0;bottom:0;z-index:90;padding:12px;display:flex;justify-content:center;pointer-events:none}
+.tour .sheet{pointer-events:auto;text-align:left;max-width:520px}
+.tour p{margin:6px 0 14px;line-height:1.5}
+nav.tabs button.hl{box-shadow:0 0 0 3px var(--accent),0 0 18px var(--accent)}
+details{background:var(--bg2);border-radius:12px;padding:12px 14px;margin-top:8px}
+summary{cursor:pointer;font-weight:600}
+details p{margin-top:8px;color:var(--muted);font-size:.9rem;line-height:1.5}
+.chk{display:flex;align-items:center;gap:10px}
+.chk .ok{color:var(--accent);font-weight:800;width:22px}
+.gcard{background:var(--bg2);border-radius:14px;padding:14px;display:grid;gap:6px;align-content:start}
+.gcard p{color:var(--muted);font-size:.88rem;line-height:1.45}
 </style>
 </head>
 <body>
 
-<!-- AUTH -->
 <div id="boot" class="muted" style="text-align:center;padding-top:35vh">Loading ACPS HUB…</div>
+
+<!-- AUTH -->
 <section id="auth" class="hide">
   <div class="card auth-box">
     <div class="brand"><div class="logo">AH</div><div><h1>ACPS HUB</h1><div class="muted">Building smart solutions for better communities</div></div></div>
@@ -92,6 +141,20 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 0 8px;b
   </div>
 </section>
 
+<!-- RESET PASSWORD -->
+<section id="reset" class="hide" style="min-height:100vh;display:grid;place-items:center;padding:16px">
+  <div class="card auth-box">
+    <div class="brand"><div class="logo">AH</div><div><h1>New password</h1><div class="muted" id="rEmail">Checking your link…</div></div></div>
+    <form id="resetForm" style="margin-top:14px">
+      <label>New password<input id="rPass" type="password" minlength="6" autocomplete="new-password" placeholder="At least 6 characters" required></label>
+      <label>Confirm new password<input id="rConf" type="password" autocomplete="new-password" placeholder="Repeat password" required></label>
+      <div class="err" id="rErr"></div>
+      <button class="btn" id="rBtn" type="submit">Save new password</button>
+    </form>
+    <button class="btn ghost sm" id="rBack" style="margin-top:12px">Back to log in</button>
+  </div>
+</section>
+
 <!-- APP -->
 <main id="app" class="wrap hide">
   <header class="top">
@@ -100,42 +163,108 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 0 8px;b
   </header>
   <div class="quote" id="quote"></div>
   <nav class="tabs" id="tabs">
-    <button data-t="gpa" class="on">GPA</button><button data-t="rem">Reminders</button><button data-t="tt">Timetable</button><button data-t="bud">Budget</button><button data-t="set">Settings</button>
+    <button data-t="home" class="on">Home</button><button data-t="gpa">GPA</button><button data-t="asg">Assignments</button><button data-t="rem">Reminders</button><button data-t="tt">Timetable</button><button data-t="bud">Budget</button><button data-t="foc">Focus</button><button data-t="set">Settings</button><button data-t="help">Guide</button>
   </nav>
 
-  <section id="p-gpa" class="card">
+  <!-- HOME -->
+  <section id="p-home" class="card">
+    <h2 id="homeTitle">Today</h2>
+    <div class="stats">
+      <div class="stat"><span class="muted">GPA</span><b id="hGpa">0.00</b></div>
+      <div class="stat"><span class="muted">Balance</span><b id="hBal">0</b></div>
+      <div class="stat"><span class="muted">Focus streak</span><b id="hStreak">0 🔥</b></div>
+      <div class="stat"><span class="muted">Tasks pending</span><b id="hPend">0</b></div>
+    </div>
+    <div id="hAlert"></div>
+    <div class="grid2">
+      <div class="sub"><h3>📚 Today's classes</h3><div class="list" id="hClasses"></div></div>
+      <div class="sub"><h3>📝 Assignments &amp; exams</h3><div class="list" id="hAsg"></div><div class="btnrow"><button class="btn ghost sm" data-go="asg">View all</button></div></div>
+      <div class="sub"><h3>⏰ Reminders</h3><div class="list" id="hRem"></div><div class="btnrow"><button class="btn ghost sm" data-go="rem">View all</button></div></div>
+      <div class="sub"><h3>💰 This month's spending</h3><div id="hBud"></div><div class="btnrow"><button class="btn ghost sm" data-go="bud">Open budget</button><button class="btn sm" data-go="foc">Start focus session</button></div></div>
+    </div>
+  </section>
+
+  <!-- GPA -->
+  <section id="p-gpa" class="card hide">
     <h2>GPA calculator</h2>
-    <form class="row c4" id="gpaForm"><input id="gUnit" placeholder="Unit name" required><input id="gCr" type="number" min="1" max="20" step="1" placeholder="Credit hrs" required><input id="gMk" type="number" min="0" max="100" step="0.1" placeholder="Marks %" required><button class="btn">Add</button></form>
+    <form class="row c4" id="gpaForm" data-f="gpa"><input name="unit" placeholder="Unit name" required><input name="cr" type="number" min="1" max="20" step="1" placeholder="Credit hrs" required><input name="mk" type="number" min="0" max="100" step="0.1" placeholder="Marks %" required><div style="display:flex;gap:6px"><button class="btn sbtn" data-label="Add">Add</button><button type="button" class="btn ghost cbtn hide">Cancel</button></div></form>
     <div class="stats"><div class="stat"><span class="muted">Your GPA (4.0 scale)</span><b id="gpaVal">0.00</b></div><div class="stat"><span class="muted">Credit hours</span><b id="gpaCr">0</b></div><div class="stat"><span class="muted">Class</span><b id="gpaCls" style="font-size:1.1rem">—</b></div></div>
     <div class="list" id="gpaList"></div>
+    <div class="btnrow"><button class="btn ghost sm" data-exp="gpa:png">🖼 Save image</button><button class="btn ghost sm" data-exp="gpa:pdf">📄 Save PDF</button><button class="btn ghost sm shareBtn hide" data-exp="gpa:share">↗ Share</button></div>
     <p class="muted" style="margin-top:12px">Scale used: 70+ = A (4), 60–69 = B (3), 50–59 = C (2), 40–49 = D (1), below 40 = E (0). Check it against your university's regulations.</p>
   </section>
 
+  <!-- ASSIGNMENTS -->
+  <section id="p-asg" class="card hide">
+    <h2>Assignments &amp; exams</h2>
+    <form class="row c4a" id="asgForm" data-f="asg"><input name="title" placeholder="Title e.g. Calculus CAT" required><input name="unit" placeholder="Unit (optional)"><select name="kind"><option>Assignment</option><option>CAT</option><option>Exam</option><option>Project</option></select><input name="due" type="datetime-local" required><div style="display:flex;gap:6px"><button class="btn sbtn" data-label="Add">Add</button><button type="button" class="btn ghost cbtn hide">Cancel</button></div></form>
+    <div class="stats"><div class="stat"><span class="muted">Pending</span><b id="aPend">0</b></div><div class="stat"><span class="muted">Overdue</span><b id="aLate" class="exp">0</b></div><div class="stat"><span class="muted">Done</span><b id="aDone">0</b></div></div>
+    <div class="list" id="asgList"></div>
+  </section>
+
+  <!-- REMINDERS -->
   <section id="p-rem" class="card hide">
     <h2>Reminders</h2>
-    <form class="row c3" id="remForm"><input id="rText" placeholder="What do you need to remember?" required style="grid-column:span 1"><input id="rWhen" type="datetime-local" required><button class="btn">Add</button></form>
+    <form class="row c3" id="remForm" data-f="rem"><input name="text" placeholder="What do you need to remember?" required><input name="when" type="datetime-local" required><div style="display:flex;gap:6px"><button class="btn sbtn" data-label="Add">Add</button><button type="button" class="btn ghost cbtn hide">Cancel</button></div></form>
     <p class="muted" id="notifHint" style="margin-top:10px"></p>
     <div class="list" id="remList"></div>
   </section>
 
+  <!-- TIMETABLE -->
   <section id="p-tt" class="card hide">
     <h2>Timetable</h2>
-    <form class="row c5" id="ttForm"><select id="tDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select><input id="tStart" type="time" required><input id="tEnd" type="time" required><input id="tUnit" placeholder="Unit / room" required><button class="btn">Add</button></form>
+    <form class="row c5" id="ttForm" data-f="tt"><select name="day"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select><input name="start" type="time" required><input name="end" type="time" required><input name="unit" placeholder="Unit / room" required><div style="display:flex;gap:6px"><button class="btn sbtn" data-label="Add">Add</button><button type="button" class="btn ghost cbtn hide">Cancel</button></div></form>
     <div id="ttList"></div>
+    <div class="btnrow"><button class="btn ghost sm" data-exp="tt:png">🖼 Save image</button><button class="btn ghost sm" data-exp="tt:pdf">📄 Save PDF</button><button class="btn ghost sm shareBtn hide" data-exp="tt:share">↗ Share</button></div>
   </section>
 
+  <!-- BUDGET -->
   <section id="p-bud" class="card hide">
     <h2>Budget</h2>
-    <form class="row c4" id="budForm"><input id="bDesc" placeholder="Description" required><select id="bType"><option value="exp">Expense</option><option value="inc">Income</option></select><input id="bAmt" type="number" min="0" step="0.01" placeholder="Amount (KES)" required><button class="btn">Add</button></form>
-    <div class="stats"><div class="stat"><span class="muted">Income</span><b class="inc" id="bInc">0</b></div><div class="stat"><span class="muted">Expenses</span><b class="exp" id="bExp">0</b></div><div class="stat"><span class="muted">Balance</span><b id="bBal">0</b></div></div>
+    <form class="row c4b" id="budForm" data-f="bud">
+      <input name="desc" class="s2" placeholder="Description e.g. Lunch" required>
+      <input name="amt" class="s2" type="number" min="0" step="0.01" placeholder="Amount (KES)" required>
+      <select name="type" id="bType"><option value="exp">Expense</option><option value="inc">Income</option></select>
+      <select name="cat" id="bCat"></select>
+      <input name="date" type="date" required>
+      <div style="display:flex;gap:6px"><button class="btn sbtn" data-label="Add" style="flex:1">Add</button><button type="button" class="btn ghost cbtn hide">Cancel</button></div>
+    </form>
+    <div class="row c3" style="margin-top:14px;grid-template-columns:1fr 1fr">
+      <label>Month<input type="month" id="bMonth"></label>
+      <form id="limitForm" style="grid-template-columns:1fr auto;align-items:end;display:grid;gap:8px"><label>Monthly spending limit (KES)<input type="number" min="0" step="1" id="bLimit" placeholder="0 = no limit"></label><button class="btn sm">Set</button></form>
+    </div>
+    <div id="bAlert"></div>
+    <div class="stats"><div class="stat"><span class="muted">Income</span><b class="inc" id="bInc">0</b></div><div class="stat"><span class="muted">Expenses</span><b class="exp" id="bExp">0</b></div><div class="stat"><span class="muted">Month balance</span><b id="bBal">0</b></div><div class="stat"><span class="muted">All-time balance</span><b id="bAll">0</b></div></div>
+    <div id="bLimitBar"></div>
+    <h3 style="margin-top:14px">Spending by category</h3>
+    <div class="pie" id="bPie"></div>
     <div class="list" id="budList"></div>
   </section>
 
+  <!-- FOCUS -->
+  <section id="p-foc" class="card hide">
+    <h2>Focus timer</h2>
+    <div class="sel2"><select id="fLen"><option value="15">15 min</option><option value="25" selected>25 min</option><option value="45">45 min</option><option value="50">50 min</option></select><input id="fLabel" placeholder="What are you studying?"></div>
+    <div class="timer"><div class="ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9155" fill="none" stroke="var(--bg2)" stroke-width="2.4"/><circle id="fArc" cx="18" cy="18" r="15.9155" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0 100"/></svg><div class="mid"><b id="fTime">25:00</b><span class="muted" id="fMode">Focus time</span></div></div></div>
+    <div class="btnrow" style="justify-content:center"><button class="btn" id="fStart">Start</button><button class="btn ghost" id="fReset">Reset</button></div>
+    <div class="stats">
+      <div class="stat"><span class="muted">Streak</span><b id="fStreak">0 🔥</b></div>
+      <div class="stat"><span class="muted">Today</span><b id="fToday">0 min</b></div>
+      <div class="stat"><span class="muted">This week</span><b id="fWeek">0 min</b></div>
+      <div class="stat"><span class="muted">Sessions</span><b id="fTotal">0</b></div>
+    </div>
+    <h3>Recent sessions</h3>
+    <div class="list" id="fList" style="margin-top:6px"></div>
+    <p class="muted" style="margin-top:12px">Finish at least one focus session a day to grow your streak. Keep this page open while the timer runs.</p>
+  </section>
+
+  <!-- SETTINGS -->
   <section id="p-set" class="card hide">
     <h2>Settings</h2>
     <div class="list">
-      <div class="item"><div class="t"><b>Notifications</b><span class="muted">Get alerts for reminders and 15 min before classes</span></div><button class="btn sm" id="notifBtn">Enable</button></div>
+      <div class="item"><div class="t"><b>Notifications</b><span class="muted">Alerts for reminders, assignments, classes and budget limit</span></div><button class="btn sm" id="notifBtn">Enable</button></div>
       <div class="item"><div class="t"><b>Theme</b><span class="muted">Dark or light</span></div><button class="btn ghost sm" id="themeBtn">Toggle</button></div>
+      <div class="item"><div class="t"><b>Ring alarm sound</b><span class="muted">Loud alarm and vibration while the app is open</span></div><div class="acts"><button class="btn ghost sm" id="testAlarm">Test</button><button class="btn sm" id="soundBtn">On</button></div></div>
       <div class="item" style="display:grid"><div class="t"><b>Accent colour</b></div><div class="swatches" id="swatches"></div></div>
       <div class="item"><div class="t"><b>Install app</b><span class="muted" id="installHint">Add ACPS HUB to your home screen / desktop</span></div><button class="btn sm" id="installBtn2">Install</button></div>
       <div class="item"><div class="t"><b>Export my data</b><span class="muted">Download a backup (JSON)</span></div><button class="btn ghost sm" id="exportBtn">Export</button></div>
@@ -143,13 +272,43 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 0 8px;b
     </div>
   </section>
 
+  <!-- GUIDE -->
+  <section id="p-help" class="card hide">
+    <h2>Guide</h2>
+    <p class="muted">New here? Take a one-minute tour, follow the checklist, or jump straight to any tool.</p>
+    <div class="btnrow"><button class="btn" id="tourBtn">▶ Take the tour</button></div>
+    <h3 style="margin-top:20px">Getting started checklist</h3>
+    <div id="checklist"></div>
+    <h3 style="margin-top:20px">What each tab does</h3>
+    <div class="grid2" style="margin-top:8px">
+      <div class="gcard"><b>🏠 Home</b><p>Your day at a glance: classes, deadlines, reminders, GPA, balance and streak.</p><button class="btn ghost sm" data-go="home" style="justify-self:start">Open</button></div>
+      <div class="gcard"><b>🎓 GPA</b><p>Add units, credit hours and marks. Edit mistakes. Save or share a report as image or PDF.</p><button class="btn ghost sm" data-go="gpa" style="justify-self:start">Open</button></div>
+      <div class="gcard"><b>📝 Assignments</b><p>Track CATs, assignments, exams and projects with a countdown and a Done tick.</p><button class="btn ghost sm" data-go="asg" style="justify-self:start">Open</button></div>
+      <div class="gcard"><b>⏰ Reminders</b><p>Anything with a date and time. The app rings and notifies you. Tap 🔔 to add a phone alarm.</p><button class="btn ghost sm" data-go="rem" style="justify-self:start">Open</button></div>
+      <div class="gcard"><b>📚 Timetable</b><p>Your weekly classes. You get an alert 15 minutes before each one.</p><button class="btn ghost sm" data-go="tt" style="justify-self:start">Open</button></div>
+      <div class="gcard"><b>💰 Budget</b><p>Income and spending by category, a monthly chart and a spending-limit warning.</p><button class="btn ghost sm" data-go="bud" style="justify-self:start">Open</button></div>
+      <div class="gcard"><b>🎯 Focus</b><p>Timed study sessions with breaks. Finish one a day to keep your streak.</p><button class="btn ghost sm" data-go="foc" style="justify-self:start">Open</button></div>
+      <div class="gcard"><b>⚙️ Settings</b><p>Notifications, alarm sound, theme, colours, install and data backup.</p><button class="btn ghost sm" data-go="set" style="justify-self:start">Open</button></div>
+    </div>
+    <h3 style="margin-top:20px">Questions and answers</h3>
+    <details><summary>How do I make alerts ring on my phone?</summary><p>1) Install the app (Install app button, or Add to Home Screen on iPhone). 2) Settings, then Enable notifications and Allow. 3) On Android open phone Settings, Apps, ACPS HUB (or Chrome), Notifications, and set it to Alert/High importance with sound. 4) While the app is open it rings with a loud alarm until you dismiss it. 5) For a guaranteed ring even when the app is closed, tap the 🔔 button on a reminder or assignment and open the file to add it to your phone's calendar alarm.</p></details>
+    <details><summary>I forgot my password</summary><p>On the login screen type your email and tap Forgot password. We email you a secure link. Open it, and you will be asked to create a new password. Check your spam folder if you cannot find it.</p></details>
+    <details><summary>Can I use it on another phone or laptop?</summary><p>Yes. Log in with the same email and password and your data appears. It syncs automatically.</p></details>
+    <details><summary>Does it work offline?</summary><p>Yes. Changes are saved on your device and sync when you are back online.</p></details>
+    <details><summary>How is my GPA calculated?</summary><p>70+ = A (4), 60-69 = B (3), 50-59 = C (2), 40-49 = D (1), below 40 = E (0), weighted by credit hours. Check this against your university's rules.</p></details>
+    <details><summary>How do I install the app?</summary><p>Android or computer: tap Install app at the top. iPhone: tap Share, then Add to Home Screen.</p></details>
+    <details><summary>Who can see my data?</summary><p>Only you. Your data is stored under your own account.</p></details>
+  </section>
+
   <p class="muted" style="margin-top:14px">Your data is saved to your account and synced across your devices.</p>
   <footer>© 2026 ACPS HUB. All rights reserved.<br>Developed by Allan.<br>Building smart solutions for better communities through technology and innovation.</footer>
 </main>
 
+<div id="ring" class="modal hide"><div class="sheet"><div class="bell">🔔</div><h2 id="ringH" style="margin-top:8px"></h2><p id="ringP" class="muted" style="margin:6px 0 16px"></p><div class="btnrow" style="justify-content:center"><button class="btn ghost hide" id="ringSnooze">Snooze 5 min</button><button class="btn" id="ringOk">Dismiss</button></div></div></div>
+<div id="tour" class="tour hide"><div class="sheet"><div class="muted" id="tourN"></div><h2 id="tourH" style="margin:4px 0 0"></h2><p id="tourP"></p><div class="btnrow" style="margin-top:0"><button class="btn ghost sm" id="tourSkip">Skip</button><span style="flex:1"></span><button class="btn ghost sm" id="tourBack">Back</button><button class="btn sm" id="tourNext">Next</button></div></div></div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,deleteUser} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,deleteUser,verifyPasswordResetCode,confirmPasswordReset} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getFirestore,doc,getDoc,setDoc,deleteDoc} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 const fbApp=initializeApp({
   apiKey:"AIzaSyDJDZzkC9h2xYgOqIJztMBtbaFeDZOKUsw",
@@ -162,15 +321,23 @@ const fbApp=initializeApp({
 const auth=getAuth(fbApp), db=getFirestore(fbApp);
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const LS={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},set(k,v){localStorage.setItem(k,JSON.stringify(v))}};
+const LS={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const pad=n=>String(n).padStart(2,'0');
+const dateKey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const todayKey=()=>dateKey(new Date());
+const monthKey=()=>todayKey().slice(0,7);
+const fmtDT=s=>new Date(s).toLocaleString([], {dateStyle:'medium',timeStyle:'short'});
+const kes=n=>'KES '+n.toLocaleString(undefined,{maximumFractionDigits:2});
 const QUOTES=["Discipline beats motivation. Show up today.","Small steps every day add up to big results.","Study now, celebrate later.","Consistency is your superpower.","Progress, not perfection."];
 const ACCENTS=["#34d399","#38bdf8","#a78bfa","#fb923c","#f472b6","#facc15"];
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const CATS={Food:'#fb923c',Transport:'#38bdf8',Airtime:'#a78bfa',Fees:'#f472b6',Rent:'#facc15',Books:'#34d399',Entertainment:'#f87171',Other:'#94a3b8'};
+const TABS=['home','gpa','asg','rem','tt','bud','foc','set','help'];
 
 let user=null, D=null, mode='login', deferredInstall=null, swReg=null;
 
-/* ---------- toast ---------- */
-function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2800)}
 
 /* ---------- auth (Firebase) ---------- */
 function setMode(m){
@@ -196,7 +363,7 @@ function fbErr(c){
 $('#authForm').onsubmit=async e=>{
   e.preventDefault();
   const em=$('#aEmail').value.trim().toLowerCase(), pw=$('#aPass').value, err=$('#aErr'), btn=$('#aSubmit');
-  err.textContent='';
+  err.textContent='';err.style.color='';
   try{
     if(mode==='signup'){
       const name=$('#aName').value.trim();
@@ -218,11 +385,28 @@ $('#authForm').onsubmit=async e=>{
 $('#forgot').onclick=async()=>{
   const em=$('#aEmail').value.trim(), err=$('#aErr');
   if(!em){err.textContent='Type your email above first, then tap "Forgot password?".';return}
-  try{await sendPasswordResetEmail(auth,em);err.textContent='';toast('Reset link sent. Check your email (and spam).')}
+  try{await sendPasswordResetEmail(auth,em,{url:location.origin+location.pathname});err.style.color='var(--accent)';err.textContent='Reset email sent to '+em+'. Open the link in it to create a new password. Check spam too.'}
   catch(x){err.textContent=fbErr(x.code)}
 };
 $('#logoutBtn').onclick=async()=>{try{await pushCloud()}catch{}await signOut(auth)};
-function showAuth(){$('#boot').classList.add('hide');$('#app').classList.add('hide');$('#auth').classList.remove('hide');setMode('login')}
+function showAuth(){$('#boot').classList.add('hide');$('#app').classList.add('hide');$('#reset').classList.add('hide');$('#auth').classList.remove('hide');setMode('login');
+  try{if(sessionStorage.getItem('acps_pw_ok')){sessionStorage.removeItem('acps_pw_ok');const e=$('#aErr');e.style.color='var(--accent)';e.textContent='Password changed. Log in with your new password.'}}catch{}}
+/* ---- password reset (opened from the email link) ---- */
+const QS=new URLSearchParams(location.search);
+let RESET=(QS.get('mode')==='resetPassword'&&QS.get('oobCode'))?QS.get('oobCode'):null;
+async function showReset(){
+  ['#boot','#auth','#app'].forEach(s=>$(s).classList.add('hide'));$('#reset').classList.remove('hide');
+  try{const em=await verifyPasswordResetCode(auth,RESET);$('#rEmail').textContent='for '+em}
+  catch(x){$('#rEmail').textContent='Link problem';$('#resetForm').classList.add('hide');
+    const m=document.createElement('p');m.className='err';m.style.marginTop='12px';m.textContent='This reset link is invalid, already used, or has expired. Go back and request a new one.';$('#reset .auth-box').insertBefore(m,$('#rBack'))}
+}
+$('#resetForm').onsubmit=async e=>{e.preventDefault();const pw=$('#rPass').value,err=$('#rErr');err.textContent='';
+  if(pw.length<6){err.textContent='Password must be at least 6 characters.';return}
+  if(pw!==$('#rConf').value){err.textContent='Passwords do not match.';return}
+  $('#rBtn').disabled=true;
+  try{await confirmPasswordReset(auth,RESET,pw);try{sessionStorage.setItem('acps_pw_ok','1')}catch{}location.replace(location.pathname)}
+  catch(x){err.textContent=x.code==='auth/weak-password'?'Password is too weak. Use at least 6 characters.':'This link is invalid or has expired. Request a new reset email.';$('#rBtn').disabled=false}};
+$('#rBack').onclick=()=>{location.replace(location.pathname)};
 function setHello(){
   const name=(user&&(user.displayName||user.email))||'Student';
   $('#hello').textContent='Hello, '+name.split(' ')[0];$('#avatar').textContent=name[0].toUpperCase();
@@ -230,8 +414,8 @@ function setHello(){
 
 /* ---------- data (local cache + Firestore sync) ---------- */
 const dkey=()=>'acps_data_'+(user?user.uid:'guest');
-const blank=()=>({gpa:[],rem:[],tt:[],bud:[],set:{accent:ACCENTS[0],theme:'dark'},fired:{}});
-function normalize(x){x=Object.assign(blank(),x||{});x.set=Object.assign({accent:ACCENTS[0],theme:'dark'},x.set||{});x.fired=x.fired||{};return x}
+const blank=()=>({gpa:[],rem:[],tt:[],bud:[],asg:[],foc:[],set:{accent:ACCENTS[0],theme:'dark',limit:0,sound:true,toured:false},fired:{}});
+function normalize(x){x=Object.assign(blank(),x||{});x.set=Object.assign({accent:ACCENTS[0],theme:'dark',limit:0,sound:true,toured:false},x.set||{});x.fired=x.fired||{};return x}
 function setSync(s){const el=$('#sync');if(el)el.textContent=s==='ok'?'☁ Synced':s==='saving'?'☁ Saving…':'☁ Offline, will sync'}
 let saveT=null;
 function save(){LS.set(dkey(),D);LS.set(dkey()+'_t',Date.now());clearTimeout(saveT);saveT=setTimeout(()=>pushCloud().catch(()=>{}),800);setSync('saving')}
@@ -265,65 +449,289 @@ function showApp(){
   $('#boot').classList.add('hide');$('#auth').classList.add('hide');$('#app').classList.remove('hide');
   setHello();
   $('#quote').textContent=QUOTES[new Date().getDate()%QUOTES.length];
-  renderAll();buildSwatches();updateNotifUI();tab('gpa');
+  $('#bMonth').value=monthKey();$('#bLimit').value=D.set.limit||'';
+  fillCats();$('#budForm').elements.date.value=todayKey();
+  initTimer();renderAll();buildSwatches();updateNotifUI();rSound();tab('home');
+  if(!D.set.toured)setTimeout(startTour,700);
+  $('#installBtn2').closest('.item').classList.remove('hide');
+  if(navigator.share&&navigator.canShare)$$('.shareBtn').forEach(b=>b.classList.remove('hide'));
 }
 function tab(t){
   $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
-  ['gpa','rem','tt','bud','set'].forEach(k=>$('#p-'+k).classList.toggle('hide',k!==t));
+  TABS.forEach(k=>$('#p-'+k).classList.toggle('hide',k!==t));
+  if(t==='home')rHome();
+  if(t==='help')rGuide();
 }
 $('#tabs').onclick=e=>{const b=e.target.closest('button');if(b)tab(b.dataset.t)};
-function renderAll(){rGpa();rRem();rTT();rBud()}
+function renderAll(){rGpa();rAsg();rRem();rTT();rBud();rHome();rFocus();rGuide()}
+
+/* ---------- generic add / edit helpers ---------- */
+const EDIT={};
+const FORMS={gpa:'#gpaForm',rem:'#remForm',tt:'#ttForm',bud:'#budForm',asg:'#asgForm'};
+function exitEdit(n){
+  EDIT[n]=null;const f=$(FORMS[n]);f.reset();
+  const b=f.querySelector('.sbtn');b.textContent=b.dataset.label;f.querySelector('.cbtn').classList.add('hide');
+  if(n==='bud'){f.elements.date.value=todayKey();budTypeUI()}
+}
+function startEdit(n,id,vals){
+  EDIT[n]=id;const f=$(FORMS[n]);
+  for(const [k,v] of Object.entries(vals))f.elements[k].value=v;
+  f.querySelector('.sbtn').textContent='Save changes';f.querySelector('.cbtn').classList.remove('hide');
+  if(n==='bud')budTypeUI();
+  f.scrollIntoView({behavior:'smooth',block:'center'});f.elements[Object.keys(vals)[0]].focus({preventScroll:true});
+}
+function upsert(n,arr,obj){
+  if(EDIT[n]){const i=D[arr].findIndex(x=>x.id===EDIT[n]);if(i>-1)D[arr][i]=Object.assign(D[arr][i],obj);}
+  else D[arr].push(Object.assign({id:uid()},obj));
+  save();
+}
+const fv=f=>n=>f.elements[n].value;
+$$('.cbtn').forEach(b=>b.onclick=()=>exitEdit(b.closest('form').dataset.f));
 
 /* ---------- GPA ---------- */
 const pts=m=>m>=70?4:m>=60?3:m>=50?2:m>=40?1:0;
 const grade=m=>m>=70?'A':m>=60?'B':m>=50?'C':m>=40?'D':'E';
-$('#gpaForm').onsubmit=e=>{e.preventDefault();
-  D.gpa.push({id:uid(),unit:$('#gUnit').value.trim(),cr:+$('#gCr').value,mk:+$('#gMk').value});save();e.target.reset();rGpa()};
+function gpaCalc(){const tc=D.gpa.reduce((a,x)=>a+x.cr,0),tp=D.gpa.reduce((a,x)=>a+x.cr*pts(x.mk),0),g=tc?tp/tc:0;
+  return {tc,g,cls:!tc?'—':g>=3.5?'First Class':g>=3?'Second Upper':g>=2?'Second Lower':g>=1?'Pass':'Fail'}}
+$('#gpaForm').onsubmit=e=>{e.preventDefault();const v=fv(e.target);
+  upsert('gpa','gpa',{unit:v('unit').trim(),cr:+v('cr'),mk:+v('mk')});exitEdit('gpa');renderAll()};
 function rGpa(){
-  const tc=D.gpa.reduce((a,x)=>a+x.cr,0), tp=D.gpa.reduce((a,x)=>a+x.cr*pts(x.mk),0), g=tc?tp/tc:0;
-  $('#gpaVal').textContent=g.toFixed(2);$('#gpaCr').textContent=tc;
-  $('#gpaCls').textContent=!tc?'—':g>=3.5?'First Class':g>=3?'Second Upper':g>=2?'Second Lower':g>=1?'Pass':'Fail';
-  $('#gpaList').innerHTML=D.gpa.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.cr} hrs · ${x.mk}% · <span class="pill">${grade(x.mk)}</span></span></div><button class="btn danger" data-del="gpa:${x.id}">Remove</button></div>`).join('')||'<p class="muted">No units yet. Add your first one above.</p>';
+  const {tc,g,cls}=gpaCalc();
+  $('#gpaVal').textContent=g.toFixed(2);$('#gpaCr').textContent=tc;$('#gpaCls').textContent=cls;
+  $('#gpaList').innerHTML=D.gpa.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.cr} hrs · ${x.mk}% · <span class="pill">${grade(x.mk)}</span></span></div><div class="acts"><button class="btn ghost sm" data-edit="gpa:${x.id}">Edit</button><button class="btn danger" data-del="gpa:${x.id}">✕</button></div></div>`).join('')||'<p class="muted">No units yet. Add your first one above.</p>';
+}
+
+/* ---------- Assignments ---------- */
+function countdown(when){
+  const ms=new Date(when)-Date.now(),a=Math.abs(ms),d=Math.floor(a/864e5),h=Math.floor(a%864e5/36e5),m=Math.floor(a%36e5/6e4);
+  const t=d>=1?`${d} day${d>1?'s':''}`:h>=1?`${h} hr${h>1?'s':''}`:`${Math.max(m,1)} min`;
+  return ms<0?{t:'Overdue by '+t,cls:'late'}:{t:t+' left',cls:d<3?'soon':''};
+}
+$('#asgForm').onsubmit=e=>{e.preventDefault();const v=fv(e.target),id=EDIT.asg;
+  upsert('asg','asg',{title:v('title').trim(),unit:v('unit').trim(),kind:v('kind'),due:v('due'),done:id?(D.asg.find(x=>x.id===id)||{}).done||false:false});
+  if(id)delete D.fired['a'+id];exitEdit('asg');renderAll()};
+const asgLine=(x,full)=>{const c=countdown(x.due);
+  return `<div class="item ${x.done?'done':''}"><div class="t"><b>${esc(x.title)}</b><span class="muted">${esc(x.kind)}${x.unit?' · '+esc(x.unit):''} · ${fmtDT(x.due)}</span>${x.done?'':`<span class="pill ${c.cls}" style="justify-self:start">${c.t}</span>`}</div>${full?`<div class="acts"><button class="btn ghost sm" data-ics="asg:${x.id}" title="Add phone alarm">🔔</button><button class="btn ghost sm" data-adone="${x.id}">${x.done?'Undo':'Done'}</button><button class="btn ghost sm" data-edit="asg:${x.id}">Edit</button><button class="btn danger" data-del="asg:${x.id}">✕</button></div>`:''}</div>`};
+function rAsg(){
+  const pend=D.asg.filter(x=>!x.done).sort((a,b)=>a.due.localeCompare(b.due)), done=D.asg.filter(x=>x.done).sort((a,b)=>b.due.localeCompare(a.due));
+  $('#aPend').textContent=pend.length;$('#aDone').textContent=done.length;$('#aLate').textContent=pend.filter(x=>new Date(x.due)<new Date()).length;
+  $('#asgList').innerHTML=[...pend,...done].map(x=>asgLine(x,true)).join('')||'<p class="muted">No assignments or exams yet.</p>';
 }
 
 /* ---------- Reminders ---------- */
-$('#remForm').onsubmit=e=>{e.preventDefault();
-  D.rem.push({id:uid(),text:$('#rText').value.trim(),when:$('#rWhen').value,done:false});save();e.target.reset();rRem();scheduleTriggers();
-  if('Notification' in window&&Notification.permission==='default')toast('Enable notifications in Settings to get alerts');};
+$('#remForm').onsubmit=e=>{e.preventDefault();const v=fv(e.target),id=EDIT.rem;
+  upsert('rem','rem',{text:v('text').trim(),when:v('when'),done:id?(D.rem.find(x=>x.id===id)||{}).done||false:false});
+  if(id)delete D.fired['r'+id];exitEdit('rem');renderAll();scheduleTriggers();
+  if('Notification' in window&&Notification.permission==='default')toast('Enable notifications in Settings to get alerts')};
 function rRem(){
   const L=[...D.rem].sort((a,b)=>a.when.localeCompare(b.when));
   $('#remList').innerHTML=L.map(x=>{const late=!x.done&&new Date(x.when)<new Date();
-    return `<div class="item ${x.done?'done':''}"><div class="t"><b>${esc(x.text)}</b><span class="muted">${new Date(x.when).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})}${late?' · <span class="exp">overdue</span>':''}</span></div><div style="display:flex;gap:6px"><button class="btn ghost sm" data-done="${x.id}">${x.done?'Undo':'Done'}</button><button class="btn danger" data-del="rem:${x.id}">✕</button></div></div>`}).join('')||'<p class="muted">No reminders yet.</p>';
+    return `<div class="item ${x.done?'done':''}"><div class="t"><b>${esc(x.text)}</b><span class="muted">${fmtDT(x.when)}${late?' · <span class="exp">overdue</span>':''}</span></div><div class="acts"><button class="btn ghost sm" data-ics="rem:${x.id}" title="Add phone alarm">🔔</button><button class="btn ghost sm" data-done="${x.id}">${x.done?'Undo':'Done'}</button><button class="btn ghost sm" data-edit="rem:${x.id}">Edit</button><button class="btn danger" data-del="rem:${x.id}">✕</button></div></div>`}).join('')||'<p class="muted">No reminders yet.</p>';
 }
 
 /* ---------- Timetable ---------- */
-const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-$('#ttForm').onsubmit=e=>{e.preventDefault();
-  D.tt.push({id:uid(),day:$('#tDay').value,start:$('#tStart').value,end:$('#tEnd').value,unit:$('#tUnit').value.trim()});save();
-  $('#tStart').value=$('#tEnd').value=$('#tUnit').value='';rTT()};
+$('#ttForm').onsubmit=e=>{e.preventDefault();const f=e.target,v=fv(f),day=v('day'),wasEdit=!!EDIT.tt;
+  upsert('tt','tt',{day,start:v('start'),end:v('end'),unit:v('unit').trim()});exitEdit('tt');
+  if(!wasEdit)f.elements.day.value=day;renderAll()};
 function rTT(){
   $('#ttList').innerHTML=DAYS.map(d=>{const L=D.tt.filter(x=>x.day===d).sort((a,b)=>a.start.localeCompare(b.start));
-    return L.length?`<div class="dayh">${d}</div><div class="list" style="margin-top:0">${L.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.start} – ${x.end}</span></div><button class="btn danger" data-del="tt:${x.id}">✕</button></div>`).join('')}</div>`:''}).join('')||'<p class="muted" style="margin-top:12px">No classes yet.</p>';
+    return L.length?`<div class="dayh">${d}</div><div class="list" style="margin-top:0">${L.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.start} – ${x.end}</span></div><div class="acts"><button class="btn ghost sm" data-edit="tt:${x.id}">Edit</button><button class="btn danger" data-del="tt:${x.id}">✕</button></div></div>`).join('')}</div>`:''}).join('')||'<p class="muted" style="margin-top:12px">No classes yet.</p>';
 }
 
 /* ---------- Budget ---------- */
-$('#budForm').onsubmit=e=>{e.preventDefault();
-  D.bud.push({id:uid(),desc:$('#bDesc').value.trim(),type:$('#bType').value,amt:+$('#bAmt').value,date:new Date().toISOString()});save();e.target.reset();rBud()};
-const kes=n=>'KES '+n.toLocaleString(undefined,{maximumFractionDigits:2});
+function fillCats(){$('#bCat').innerHTML=Object.keys(CATS).map(c=>`<option>${c}</option>`).join('')}
+function budTypeUI(){$('#bCat').classList.toggle('hide',$('#bType').value==='inc')}
+$('#bType').onchange=budTypeUI;
+$('#budForm').onsubmit=e=>{e.preventDefault();const v=fv(e.target),inc=v('type')==='inc';
+  upsert('bud','bud',{desc:v('desc').trim(),type:v('type'),cat:inc?'Income':v('cat'),amt:+v('amt'),date:v('date')});exitEdit('bud');renderAll()};
+$('#bMonth').onchange=()=>rBud();
+$('#limitForm').onsubmit=e=>{e.preventDefault();D.set.limit=Math.max(0,+$('#bLimit').value||0);
+  Object.keys(D.fired).forEach(k=>{if(k.startsWith('lim'))delete D.fired[k]});save();renderAll();toast(D.set.limit?'Limit set to '+kes(D.set.limit):'Limit removed')};
+const monthTx=m=>D.bud.filter(x=>(x.date||'').slice(0,7)===m);
+function monthSpend(m){return monthTx(m).filter(x=>x.type==='exp').reduce((a,x)=>a+x.amt,0)}
+function limitUI(spent){
+  const L=D.set.limit||0;if(!L)return {bar:'',alert:'',pct:0};
+  const p=spent/L,cls=p>=1?'over':p>=.8?'warn':'';
+  return {pct:p,
+    bar:`<div class="muted" style="margin-bottom:6px">${kes(spent)} of ${kes(L)} limit (${Math.round(p*100)}%)</div><div class="bar ${cls}"><i style="width:${Math.min(100,p*100)}%"></i></div>`,
+    alert:p>=1?`<div class="alert over">🚨 You have exceeded your monthly limit by ${kes(spent-L)}.</div>`:p>=.8?`<div class="alert warn">⚠️ You have used ${Math.round(p*100)}% of your monthly limit. ${kes(L-spent)} left.</div>`:''};
+}
 function rBud(){
-  const inc=D.bud.filter(x=>x.type==='inc').reduce((a,x)=>a+x.amt,0), ex=D.bud.filter(x=>x.type==='exp').reduce((a,x)=>a+x.amt,0);
-  $('#bInc').textContent=kes(inc);$('#bExp').textContent=kes(ex);$('#bBal').textContent=kes(inc-ex);
-  $('#bBal').style.color=inc-ex<0?'var(--danger)':'var(--accent)';
-  $('#budList').innerHTML=[...D.bud].reverse().map(x=>`<div class="item"><div class="t"><b>${esc(x.desc)}</b><span class="muted">${new Date(x.date).toLocaleDateString()}</span></div><div style="display:flex;gap:10px;align-items:center"><b class="${x.type}">${x.type==='inc'?'+':'−'}${kes(x.amt)}</b><button class="btn danger" data-del="bud:${x.id}">✕</button></div></div>`).join('')||'<p class="muted">No transactions yet.</p>';
+  const m=$('#bMonth').value||monthKey(),tx=monthTx(m);
+  const inc=tx.filter(x=>x.type==='inc').reduce((a,x)=>a+x.amt,0),ex=tx.filter(x=>x.type==='exp').reduce((a,x)=>a+x.amt,0);
+  const all=D.bud.reduce((a,x)=>a+(x.type==='inc'?x.amt:-x.amt),0);
+  $('#bInc').textContent=kes(inc);$('#bExp').textContent=kes(ex);$('#bBal').textContent=kes(inc-ex);$('#bAll').textContent=kes(all);
+  $('#bBal').style.color=inc-ex<0?'var(--danger)':'var(--accent)';$('#bAll').style.color=all<0?'var(--danger)':'var(--accent)';
+  const lu=limitUI(ex);$('#bAlert').innerHTML=lu.alert;$('#bLimitBar').innerHTML=lu.bar;
+  // pie
+  const by={};tx.filter(x=>x.type==='exp').forEach(x=>by[x.cat||'Other']=(by[x.cat||'Other']||0)+x.amt);
+  const ent=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+  if(!ent.length)$('#bPie').innerHTML='<p class="muted">No expenses this month yet.</p>';
+  else{let off=25;const segs=ent.map(([c,v])=>{const p=v/ex*100,s=`<circle cx="18" cy="18" r="15.9155" fill="none" stroke="${CATS[c]||CATS.Other}" stroke-width="5" stroke-dasharray="${p} ${100-p}" stroke-dashoffset="${off}"/>`;off-=p;return s}).join('');
+    $('#bPie').innerHTML=`<svg viewBox="0 0 36 36" role="img" aria-label="Spending by category"><circle cx="18" cy="18" r="15.9155" fill="none" stroke="var(--bg2)" stroke-width="5"/>${segs}</svg><div class="legend">${ent.map(([c,v])=>`<div><i style="background:${CATS[c]||CATS.Other}"></i><span>${esc(c)}</span><span>${kes(v)} · ${Math.round(v/ex*100)}%</span></div>`).join('')}</div>`}
+  $('#budList').innerHTML=[...tx].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(x=>`<div class="item"><div class="t"><b>${esc(x.desc)}</b><span class="muted"><span class="cdot" style="background:${x.type==='inc'?'var(--accent)':CATS[x.cat]||CATS.Other}"></span>${esc(x.type==='inc'?'Income':x.cat||'Other')} · ${x.date}</span></div><div class="acts"><b class="${x.type}">${x.type==='inc'?'+':'−'}${kes(x.amt)}</b><button class="btn ghost sm" data-edit="bud:${x.id}">Edit</button><button class="btn danger" data-del="bud:${x.id}">✕</button></div></div>`).join('')||'<p class="muted">No transactions this month.</p>';
 }
 
-/* ---------- delete / done (delegated) ---------- */
+/* ---------- Focus (Pomodoro) ---------- */
+const T={mode:'focus',len:1500,left:1500,end:0,running:false,iv:null};
+function initTimer(){clearInterval(T.iv);T.mode='focus';T.len=T.left=(+$('#fLen').value||25)*60;T.running=false}
+function streakInfo(){
+  const days=new Set(D.foc.map(x=>x.date));let d=new Date(),n=0;
+  if(!days.has(dateKey(d)))d.setDate(d.getDate()-1);
+  while(days.has(dateKey(d))){n++;d.setDate(d.getDate()-1)}return n;
+}
+function rFocus(){
+  if(!D)return;
+  const m=Math.floor(T.left/60),s=T.left%60;
+  $('#fTime').textContent=pad(m)+':'+pad(s);$('#fMode').textContent=T.mode==='focus'?'Focus time':'Break time';
+  $('#fArc').setAttribute('stroke-dasharray',`${(1-T.left/T.len)*100} 100`);
+  $('#fStart').textContent=T.running?'Pause':(T.left<T.len?'Resume':'Start');
+  $('#fLen').disabled=T.running||T.mode!=='focus';
+  document.title=T.running?`${pad(m)}:${pad(s)} · ACPS HUB`:'ACPS HUB Student Portal';
+  const st=streakInfo(),tk=todayKey(),wk=dateKey(new Date(Date.now()-6*864e5));
+  $('#fStreak').textContent=st+' 🔥';$('#hStreak').textContent=st+' 🔥';
+  $('#fToday').textContent=D.foc.filter(x=>x.date===tk).reduce((a,x)=>a+x.mins,0)+' min';
+  $('#fWeek').textContent=D.foc.filter(x=>x.date>=wk).reduce((a,x)=>a+x.mins,0)+' min';
+  $('#fTotal').textContent=D.foc.length;
+  $('#fList').innerHTML=[...D.foc].reverse().slice(0,6).map(x=>`<div class="item"><div class="t"><b>${esc(x.label||'Focus session')}</b><span class="muted">${x.date} · ${x.mins} min</span></div><span class="pill">✓</span></div>`).join('')||'<p class="muted">No sessions yet. Start your first one!</p>';
+}
+function syncTimer(){
+  if(!T.running)return;
+  T.left=Math.max(0,Math.round((T.end-Date.now())/1000));rFocus();
+  if(T.left<=0)finishTimer();
+}
+function finishTimer(){
+  clearInterval(T.iv);T.running=false;
+  if(T.mode==='focus'){
+    D.foc.push({id:uid(),date:todayKey(),mins:Math.round(T.len/60),label:$('#fLabel').value.trim(),ts:Date.now()});save();
+    alarm('✅ Focus session complete','Great work! Take a 5-minute break.','f'+Date.now());
+    T.mode='break';T.len=T.left=300;
+  }else{
+    alarm('⏰ Break over','Ready for another focus session?','b'+Date.now());
+    T.mode='focus';T.len=T.left=(+$('#fLen').value||25)*60;
+  }
+  renderAll();
+}
+$('#fStart').onclick=()=>{
+  if(T.running){T.running=false;clearInterval(T.iv);rFocus();return}
+  T.running=true;T.end=Date.now()+T.left*1000;clearInterval(T.iv);T.iv=setInterval(syncTimer,500);rFocus();
+  if('Notification' in window&&Notification.permission==='default')toast('Enable notifications in Settings to be alerted when time is up');
+};
+$('#fReset').onclick=()=>{clearInterval(T.iv);T.running=false;T.mode='focus';T.len=T.left=(+$('#fLen').value||25)*60;rFocus()};
+$('#fLen').onchange=()=>{if(!T.running&&T.mode==='focus'){T.len=T.left=(+$('#fLen').value)*60;rFocus()}};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncTimer()});
+
+/* ---------- Home dashboard ---------- */
+function rHome(){
+  if(!D)return;
+  const now=new Date(),dn=DAYS[(now.getDay()+6)%7];
+  $('#homeTitle').textContent=now.toLocaleDateString([], {weekday:'long',day:'numeric',month:'long'});
+  const {g,tc}=gpaCalc();$('#hGpa').textContent=g.toFixed(2);
+  const bal=D.bud.reduce((a,x)=>a+(x.type==='inc'?x.amt:-x.amt),0);$('#hBal').textContent=kes(bal);$('#hBal').style.color=bal<0?'var(--danger)':'var(--accent)';
+  const pend=D.asg.filter(x=>!x.done),rems=D.rem.filter(x=>!x.done);
+  $('#hPend').textContent=pend.length+rems.length;
+  const hm=pad(now.getHours())+':'+pad(now.getMinutes());
+  const cl=D.tt.filter(x=>x.day===dn).sort((a,b)=>a.start.localeCompare(b.start));
+  $('#hClasses').innerHTML=cl.map(x=>{const st=hm>=x.start&&hm<x.end?'<span class="pill">Now</span>':hm<x.start?'':'<span class="muted">done</span>';
+    return `<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.start} – ${x.end}</span></div>${st}</div>`}).join('')||'<p class="muted">No classes today 🎉</p>';
+  const ap=[...pend].sort((a,b)=>a.due.localeCompare(b.due)).slice(0,4);
+  $('#hAsg').innerHTML=ap.map(x=>asgLine(x,false)).join('')||'<p class="muted">Nothing pending. Nice!</p>';
+  const rp=[...rems].sort((a,b)=>a.when.localeCompare(b.when)).slice(0,4);
+  $('#hRem').innerHTML=rp.map(x=>{const c=countdown(x.when);return `<div class="item"><div class="t"><b>${esc(x.text)}</b><span class="muted">${fmtDT(x.when)}</span></div><span class="pill ${c.cls}">${c.t}</span></div>`}).join('')||'<p class="muted">No upcoming reminders.</p>';
+  const sp=monthSpend(monthKey()),lu=limitUI(sp);
+  $('#hBud').innerHTML=`<div style="font-size:1.4rem;font-weight:800;color:var(--accent);margin-bottom:8px">${kes(sp)}</div>${lu.bar||'<p class="muted">Set a monthly limit in Budget to get spending warnings.</p>'}`;
+  $('#hAlert').innerHTML=lu.alert;
+}
+
+/* ---------- delegated clicks ---------- */
 document.addEventListener('click',e=>{
+  const go=e.target.closest('[data-go]');if(go){tab(go.dataset.go);window.scrollTo({top:0,behavior:'smooth'});return}
+  const ic=e.target.closest('[data-ics]');
+  if(ic){const [k,id]=ic.dataset.ics.split(':'),x=D[k].find(y=>y.id===id);if(x){if(k==='rem')icsDownload(x.text,x.when,[0],15);else icsDownload(x.kind+': '+x.title,x.due,[1440,60],30)}return}
   const d=e.target.closest('[data-del]');
-  if(d){const [k,id]=d.dataset.del.split(':');D[k]=D[k].filter(x=>x.id!==id);save();renderAll();return}
+  if(d){const [k,id]=d.dataset.del.split(':');if(EDIT[k]===id)exitEdit(k);D[k]=D[k].filter(x=>x.id!==id);save();renderAll();return}
   const n=e.target.closest('[data-done]');
-  if(n){const r=D.rem.find(x=>x.id===n.dataset.done);if(r){r.done=!r.done;save();rRem()}}
+  if(n){const r=D.rem.find(x=>x.id===n.dataset.done);if(r){r.done=!r.done;save();renderAll()}return}
+  const ad=e.target.closest('[data-adone]');
+  if(ad){const r=D.asg.find(x=>x.id===ad.dataset.adone);if(r){r.done=!r.done;save();renderAll()}return}
+  const ed=e.target.closest('[data-edit]');
+  if(ed){const [k,id]=ed.dataset.edit.split(':'),x=D[k].find(y=>y.id===id);if(!x)return;
+    if(k==='gpa')startEdit('gpa',id,{unit:x.unit,cr:x.cr,mk:x.mk});
+    if(k==='rem')startEdit('rem',id,{text:x.text,when:x.when});
+    if(k==='tt')startEdit('tt',id,{day:x.day,start:x.start,end:x.end,unit:x.unit});
+    if(k==='asg')startEdit('asg',id,{title:x.title,unit:x.unit||'',kind:x.kind,due:x.due});
+    if(k==='bud')startEdit('bud',id,{desc:x.desc,amt:x.amt,type:x.type,cat:x.cat&&CATS[x.cat]?x.cat:'Other',date:(x.date||todayKey()).slice(0,10)});
+    return}
+  const ex=e.target.closest('[data-exp]');
+  if(ex){const [w,fmt]=ex.dataset.exp.split(':');exportReport(w,fmt)}
 });
+
+/* ---------- Export / share (image + PDF, no libraries) ---------- */
+function fit(ctx,t,w){if(ctx.measureText(t).width<=w)return t;while(t.length>1&&ctx.measureText(t+'…').width>w)t=t.slice(0,-1);return t+'…'}
+function makeCanvas(H){const W=900,c=document.createElement('canvas');c.width=W*2;c.height=H*2;const x=c.getContext('2d');x.scale(2,2);x.fillStyle='#fff';x.fillRect(0,0,W,H);return {c,x,W}}
+function header(x,W,title,sub){
+  x.fillStyle='#0f172a';x.fillRect(0,0,W,120);
+  x.fillStyle=D.set.accent;x.beginPath();x.roundRect(36,30,60,60,16);x.fill();
+  x.fillStyle='#06201a';x.font='bold 24px Arial';x.textAlign='center';x.fillText('AH',66,70);
+  x.textAlign='left';x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText(title,116,60);
+  x.fillStyle='#94a3b8';x.font='16px Arial';x.fillText(sub,116,88);
+}
+function footer(x,W,H){x.fillStyle='#64748b';x.font='13px Arial';x.textAlign='center';x.fillText('Generated by ACPS HUB · aliwanga.github.io/acps-hub-project',W/2,H-18);x.textAlign='left'}
+function reportCanvas(which){
+  const name=(user&&(user.displayName||user.email))||'Student',dt=new Date().toLocaleDateString([], {dateStyle:'long'});
+  if(which==='gpa'){
+    const {g,tc,cls}=gpaCalc(),H=362+Math.max(D.gpa.length,1)*44,{c,x,W}=makeCanvas(H);
+    header(x,W,'GPA Report',name+' · '+dt);
+    x.fillStyle='#0f172a';x.font='bold 15px Arial';let y=160;
+    [['Unit',40],['Credits',520],['Marks',640],['Grade',770]].forEach(([t,px])=>x.fillText(t,px,y));
+    y+=14;x.fillStyle='#cbd5e1';x.fillRect(40,y,W-80,2);y+=8;
+    D.gpa.forEach((r,i)=>{if(i%2===0){x.fillStyle='#f1f5f9';x.fillRect(40,y,W-80,44)}
+      x.fillStyle='#0f172a';x.font='17px Arial';x.fillText(fit(x,r.unit,440),52,y+28);x.fillText(String(r.cr),520,y+28);x.fillText(r.mk+'%',640,y+28);x.font='bold 17px Arial';x.fillText(grade(r.mk),770,y+28);y+=44});
+    if(!D.gpa.length){x.fillStyle='#64748b';x.font='17px Arial';x.fillText('No units added yet.',52,y+28);y+=44}
+    y+=30;x.fillStyle='#0f172a';x.beginPath();x.roundRect(40,y,W-80,90,16);x.fill();
+    x.fillStyle=D.set.accent;x.font='bold 40px Arial';x.fillText(g.toFixed(2),64,y+58);
+    x.fillStyle='#fff';x.font='bold 18px Arial';x.fillText(cls,200,y+40);x.fillStyle='#94a3b8';x.font='15px Arial';x.fillText(tc+' credit hours · 4.0 scale',200,y+66);
+    footer(x,W,H);return c;
+  }
+  const days=DAYS.map(d=>[d,D.tt.filter(r=>r.day===d).sort((a,b)=>a.start.localeCompare(b.start))]).filter(a=>a[1].length);
+  const H=190+days.reduce((a,d)=>a+48+d[1].length*38,0)+(days.length?0:50)+50,{c,x,W}=makeCanvas(H);
+  header(x,W,'Weekly Timetable',name+' · '+dt);let y=160;
+  days.forEach(([d,rows])=>{x.fillStyle=D.set.accent;x.fillRect(40,y,6,28);x.fillStyle='#0f172a';x.font='bold 20px Arial';x.fillText(d,58,y+22);y+=48;
+    rows.forEach((r,i)=>{if(i%2===0){x.fillStyle='#f1f5f9';x.fillRect(40,y-24,W-80,38)}x.fillStyle='#334155';x.font='bold 16px Arial';x.fillText(r.start+' – '+r.end,52,y);x.font='16px Arial';x.fillStyle='#0f172a';x.fillText(fit(x,r.unit,600),220,y);y+=38})});
+  if(!days.length){x.fillStyle='#64748b';x.font='17px Arial';x.fillText('No classes added yet.',52,y+10)}
+  footer(x,W,H);return c;
+}
+function buildPDF(jpeg,iw,ih){
+  const enc=new TextEncoder(),PW=595,PH=842,M=24,sc=Math.min((PW-2*M)/iw,(PH-2*M)/ih),w=iw*sc,h=ih*sc,x=(PW-w)/2,y=PH-M-h;
+  const content=`q ${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q`;
+  const ch=[],off=[];let len=0;
+  const push=b=>{const u=typeof b==='string'?enc.encode(b):b;ch.push(u);len+=u.length};
+  push('%PDF-1.4\n');
+  off[1]=len;push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+  off[2]=len;push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+  off[3]=len;push(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n`);
+  off[4]=len;push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${iw} /Height ${ih} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>\nstream\n`);push(jpeg);push('\nendstream\nendobj\n');
+  off[5]=len;push(`5 0 obj\n<< /Length ${content.length} >>\nstream\n${content}\nendstream\nendobj\n`);
+  const xr=len;let t='xref\n0 6\n0000000000 65535 f \n';for(let i=1;i<=5;i++)t+=String(off[i]).padStart(10,'0')+' 00000 n \n';
+  push(t+`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
+  const out=new Uint8Array(len);let p=0;ch.forEach(u=>{out.set(u,p);p+=u.length});return new Blob([out],{type:'application/pdf'});
+}
+function saveBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+async function exportReport(which,fmt){
+  try{
+    const c=reportCanvas(which),base=which==='gpa'?'acps-gpa-report':'acps-timetable';
+    if(fmt==='pdf'){
+      const b64=c.toDataURL('image/jpeg',.92).split(',')[1],bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+      saveBlob(buildPDF(u,c.width,c.height),base+'.pdf');toast('PDF saved');return;
+    }
+    const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+    if(fmt==='share'){
+      const file=new File([blob],base+'.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'ACPS HUB'});return}catch(x){if(x.name==='AbortError')return}}
+    }
+    saveBlob(blob,base+'.png');toast('Image saved');
+  }catch(x){toast('Could not create the file on this browser')}
+}
 
 /* ---------- Settings ---------- */
 function buildSwatches(){
@@ -333,7 +741,7 @@ $('#swatches').onclick=e=>{const b=e.target.closest('.sw');if(!b)return;D.set.ac
 $('#themeBtn').onclick=()=>{D.set.theme=D.set.theme==='dark'?'light':'dark';save();applyTheme()};
 $('#exportBtn').onclick=()=>{
   const blob=new Blob([JSON.stringify({user:user.displayName,email:user.email,data:D},null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acps-hub-backup.json';a.click();URL.revokeObjectURL(a.href)};
+  saveBlob(blob,'acps-hub-backup.json')};
 $('#delBtn').onclick=async()=>{
   if(!confirm('Delete this account and ALL its data (on every device)? This cannot be undone.'))return;
   try{
@@ -346,41 +754,104 @@ $('#delBtn').onclick=async()=>{
 function updateNotifUI(){
   const ok='Notification' in window, p=ok?Notification.permission:'unsupported';
   $('#notifBtn').textContent=p==='granted'?'Enabled ✓':'Enable';$('#notifBtn').disabled=p==='granted'||p==='unsupported';
-  $('#notifHint').textContent=p==='granted'?'🔔 Notifications are on. Keep the app installed or open for the most reliable alerts.':p==='denied'?'Notifications are blocked in your browser settings for this site.':p==='unsupported'?'This browser does not support notifications.':'Turn on notifications in Settings to be alerted when a reminder is due.';
+  rGuide();$('#notifHint').textContent=p==='granted'?'🔔 Notifications are on. Keep the app installed or open for the most reliable alerts.':p==='denied'?'Notifications are blocked in your browser settings for this site.':p==='unsupported'?'This browser does not support notifications.':'Turn on notifications in Settings to be alerted when a reminder is due.';
 }
 $('#notifBtn').onclick=async()=>{
   if(!('Notification' in window))return;
   const p=await Notification.requestPermission();updateNotifUI();
-  if(p==='granted'){notify('Notifications on ✅','ACPS HUB will alert you about reminders and classes.','welcome');scheduleTriggers()}
+  if(p==='granted'){notify('Notifications on ✅','ACPS HUB will alert you about reminders, deadlines and classes.','welcome');scheduleTriggers()}
 };
 async function notify(title,body,tag){
   if(!('Notification' in window)||Notification.permission!=='granted')return;
-  const opts={body,tag,icon:'icon-192.png',badge:'icon-192.png',vibrate:[120,60,120]};
+  const opts={body,tag,icon:'icon-192.png',badge:'icon-192.png',vibrate:[300,120,300,120,600],requireInteraction:true,renotify:true,silent:false};
   try{const r=swReg||await navigator.serviceWorker.ready;await r.showNotification(title,opts)}catch{try{new Notification(title,opts)}catch{}}
 }
 function tick(){
   if(!D||!user)return;const now=new Date();let changed=false;
-  D.rem.forEach(r=>{if(!r.done&&!D.fired['r'+r.id]&&new Date(r.when)<=now){D.fired['r'+r.id]=1;changed=true;notify('⏰ Reminder',r.text,'r'+r.id)}});
-  const dn=DAYS[(now.getDay()+6)%7], today=now.toISOString().slice(0,10);
+  D.rem.forEach(r=>{if(!r.done&&!D.fired['r'+r.id]&&new Date(r.when)<=now){D.fired['r'+r.id]=1;changed=true;alarm('⏰ Reminder',r.text,'r'+r.id,()=>{r.when=localDT(new Date(Date.now()+3e5));r.done=false;delete D.fired['r'+r.id];save();renderAll()})}});
+  D.asg.forEach(a=>{const ms=new Date(a.due)-now;
+    if(!a.done&&ms>0&&ms<=864e5&&!D.fired['a'+a.id]){D.fired['a'+a.id]=1;changed=true;alarm('📝 '+a.kind+' due within 24 hours',a.title+' · '+countdown(a.due).t,'a'+a.id)}});
+  const dn=DAYS[(now.getDay()+6)%7], today=todayKey();
   D.tt.filter(c=>c.day===dn).forEach(c=>{
     const [h,m]=c.start.split(':').map(Number), st=new Date(now);st.setHours(h,m,0,0);
     const diff=(st-now)/60000, key='c'+c.id+today;
-    if(diff<=15&&diff>0&&!D.fired[key]){D.fired[key]=1;changed=true;notify('📚 Class soon',c.unit+' starts at '+c.start,key)}
+    if(diff<=15&&diff>0&&!D.fired[key]){D.fired[key]=1;changed=true;notify('📚 Class soon',c.unit+' starts at '+c.start,key);unlockAudio();ringOnce()}
   });
-  if(changed){save();rRem()}
+  const L=D.set.limit||0;
+  if(L){const mk=monthKey(),p=monthSpend(mk)/L;
+    if(p>=1&&!D.fired['lim100'+mk]){D.fired['lim100'+mk]=1;changed=true;notify('🚨 Budget limit exceeded','You have gone over your monthly spending limit.','lim')}
+    else if(p>=.8&&p<1&&!D.fired['lim80'+mk]){D.fired['lim80'+mk]=1;changed=true;notify('⚠️ Budget warning','You have used 80% of your monthly limit.','lim')}}
+  if(changed){save();renderAll()}
 }
-/* Where supported (Chromium), schedule notifications that can fire even if the tab is closed */
 async function scheduleTriggers(){
   try{
     if(!('showNotification' in ServiceWorkerRegistration.prototype)||typeof TimestampTrigger==='undefined'||Notification.permission!=='granted')return;
     const r=swReg||await navigator.serviceWorker.ready;
     for(const n of await r.getNotifications({includeTriggered:false}))if(n.showTrigger)n.close();
     for(const x of D.rem){const t=new Date(x.when).getTime();
-      if(!x.done&&t>Date.now())await r.showNotification('⏰ Reminder',{body:x.text,tag:'t'+x.id,icon:'icon-192.png',badge:'icon-192.png',showTrigger:new TimestampTrigger(t)})}
+      if(!x.done&&t>Date.now())await r.showNotification('⏰ Reminder',{body:x.text,tag:'t'+x.id,icon:'icon-192.png',badge:'icon-192.png',vibrate:[300,120,300,120,600],requireInteraction:true,showTrigger:new TimestampTrigger(t)})}
   }catch{}
 }
 setInterval(tick,15000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
+
+/* ---------- Ringing alarm (sound + vibration + full-screen popup) ---------- */
+let actx=null,ringIv=null,ringTO=null,ringQ=[];
+function unlockAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume()}catch{}}
+['click','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
+function beep(f,t0,d){const o=actx.createOscillator(),g=actx.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(0.0001,t0);g.gain.linearRampToValueAtTime(.25,t0+.02);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.connect(g);g.connect(actx.destination);o.start(t0);o.stop(t0+d+.03)}
+function ringOnce(){try{if(actx){const t=actx.currentTime;[880,1175,880,1175,880,1175].forEach((f,i)=>beep(f,t+i*.22,.18))}if(navigator.vibrate)navigator.vibrate([300,100,300,100,500])}catch{}}
+function stopRing(){clearInterval(ringIv);clearTimeout(ringTO);ringIv=ringTO=null;try{navigator.vibrate&&navigator.vibrate(0)}catch{}}
+function nextAlarm(){stopRing();const a=ringQ.shift();
+  if(!a){$('#ring').classList.add('hide');return}
+  $('#ringH').textContent=a.title;$('#ringP').textContent=a.body;$('#ringSnooze').classList.toggle('hide',!a.snooze);$('#ring').classList.remove('hide');$('#ring')._a=a;
+  if(!D||D.set.sound!==false){ringOnce();ringIv=setInterval(ringOnce,1600);ringTO=setTimeout(stopRing,60000)}}
+function showAlarm(title,body,snooze){ringQ.push({title,body,snooze});if($('#ring').classList.contains('hide'))nextAlarm()}
+$('#ringOk').onclick=nextAlarm;
+$('#ringSnooze').onclick=()=>{const a=$('#ring')._a;if(a&&a.snooze)a.snooze();nextAlarm()};
+function alarm(title,body,tag,snooze){notify(title,body,tag);showAlarm(title,body,snooze)}
+const localDT=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+$('#testAlarm').onclick=()=>{unlockAudio();showAlarm('⏰ Test alarm','If you can hear and feel this, alarms work on this device.')};
+$('#soundBtn').onclick=()=>{D.set.sound=D.set.sound===false;save();rSound()};
+function rSound(){$('#soundBtn').textContent=D.set.sound===false?'Off':'On'}
+/* phone alarm via calendar file (.ics): rings even when this app is closed */
+function icsDownload(title,startISO,alarmMins,durMin){
+  const f=d=>d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),s=new Date(startISO),e=new Date(s.getTime()+durMin*6e4);
+  const clean=t=>String(t).replace(/\\/g,' ').replace(/[,;]/g,' ').replace(/\r?\n/g,' ');
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ACPS HUB//EN','BEGIN:VEVENT','UID:'+uid()+'@acps-hub','DTSTAMP:'+f(new Date()),'DTSTART:'+f(s),'DTEND:'+f(e),'SUMMARY:'+clean(title)];
+  alarmMins.forEach(m=>L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+clean(title),'TRIGGER:-PT'+m+'M','END:VALARM'));
+  L.push('END:VEVENT','END:VCALENDAR');saveBlob(new Blob([L.join('\r\n')],{type:'text/calendar'}),'acps-alarm.ics');
+  toast('Open the file to add the alarm to your phone calendar');
+}
+
+/* ---------- Guide: tour + checklist ---------- */
+const TOUR=[
+{t:'home',h:'Welcome to ACPS HUB 👋',p:"This is your Home screen. It shows today's classes, deadlines, reminders, GPA, balance and focus streak at a glance."},
+{t:'gpa',h:'GPA',p:'Add each unit with its credit hours and marks. Your GPA updates instantly. Use Edit to fix mistakes and Save image or PDF to share it.'},
+{t:'asg',h:'Assignments & exams',p:'Track CATs, assignments, exams and projects with a live countdown. Tick Done when you finish.'},
+{t:'rem',h:'Reminders',p:'Set a date and time and the app rings and notifies you. Tap the 🔔 button to also add a phone alarm.'},
+{t:'tt',h:'Timetable',p:'Add your classes by day. You get an alert 15 minutes before each one.'},
+{t:'bud',h:'Budget',p:'Record income and expenses by category, set a monthly limit and watch the chart.'},
+{t:'foc',h:'Focus timer',p:'Study in timed sessions with short breaks. Finish one every day to grow your streak 🔥'},
+{t:'set',h:'Settings',p:'Turn on notifications and the alarm sound, install the app, change theme and colours, or back up your data.'},
+{t:'help',h:'Need help later?',p:'The Guide tab has a checklist, explanations and answers. You can replay this tour any time.'}];
+let tourI=0;
+function startTour(){tourI=0;$('#tour').classList.remove('hide');showTour()}
+function showTour(){const s=TOUR[tourI];tab(s.t);
+  $$('#tabs button').forEach(b=>b.classList.toggle('hl',b.dataset.t===s.t));
+  $('#tourH').textContent=s.h;$('#tourP').textContent=s.p;$('#tourN').textContent='Step '+(tourI+1)+' of '+TOUR.length;
+  $('#tourBack').disabled=tourI===0;$('#tourNext').textContent=tourI===TOUR.length-1?'Finish':'Next';
+  try{$('#tabs [data-t='+s.t+']').scrollIntoView({inline:'center',block:'nearest'})}catch{}}
+function endTour(){$('#tour').classList.add('hide');$$('#tabs button').forEach(b=>b.classList.remove('hl'));if(D){D.set.toured=true;save()}tab('home');window.scrollTo(0,0)}
+$('#tourNext').onclick=()=>{if(tourI>=TOUR.length-1)endTour();else{tourI++;showTour()}};
+$('#tourBack').onclick=()=>{if(tourI>0){tourI--;showTour()}};
+$('#tourSkip').onclick=endTour;$('#tourBtn').onclick=startTour;
+function rGuide(){
+  if(!D)return;
+  const it=[['Add your first unit',D.gpa.length>0,'gpa'],['Add a class to your timetable',D.tt.length>0,'tt'],['Add an assignment or exam',D.asg.length>0,'asg'],['Set a reminder',D.rem.length>0,'rem'],['Record a budget entry',D.bud.length>0,'bud'],['Set a monthly spending limit',(D.set.limit||0)>0,'bud'],['Complete a focus session',D.foc.length>0,'foc'],['Turn on notifications',('Notification' in window)&&Notification.permission==='granted','set']];
+  const n=it.filter(i=>i[1]).length;
+  $('#checklist').innerHTML=`<div class="muted">${n} of ${it.length} done</div><div class="bar" style="margin:6px 0 10px"><i style="width:${n/it.length*100}%"></i></div><div class="list" style="margin-top:0">${it.map(i=>`<div class="item chk"><span class="ok">${i[1]?'✓':'○'}</span><span style="flex:1;${i[1]?'opacity:.6;text-decoration:line-through':''}">${i[0]}</span>${i[1]?'':`<button class="btn ghost sm" data-go="${i[2]}">Go</button>`}</div>`).join('')}</div>`;
+}
 
 /* ---------- Install (PWA) ---------- */
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hide')});
@@ -396,6 +867,7 @@ window.addEventListener('appinstalled',()=>{$('#installBtn').classList.add('hide
 /* ---------- boot ---------- */
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').then(r=>swReg=r).catch(()=>{});
 onAuthStateChanged(auth,async u=>{
+  if(RESET){showReset();return}
   if(u){user=u;await loadData();showApp()}
   else{user=null;D=null;showAuth()}
 });
