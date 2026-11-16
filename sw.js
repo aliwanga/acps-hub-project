@@ -1,4 +1,4 @@
-const CACHE = 'acps-hub-v1';
+const CACHE = 'acps-hub-v2';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -15,6 +15,7 @@ self.addEventListener('activate', e => {
 // Network first, fall back to cache so the app works offline
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (new URL(e.request.url).origin !== self.location.origin) return; // let Firebase/CDN requests go straight to network
   e.respondWith(
     fetch(e.request).then(res => {
       const copy = res.clone();

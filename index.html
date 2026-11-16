@@ -74,6 +74,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 0 8px;b
 <body>
 
 <!-- AUTH -->
+<div id="boot" class="muted" style="text-align:center;padding-top:35vh">Loading ACPS HUB…</div>
 <section id="auth" class="hide">
   <div class="card auth-box">
     <div class="brand"><div class="logo">AH</div><div><h1>ACPS HUB</h1><div class="muted">Building smart solutions for better communities</div></div></div>
@@ -84,16 +85,17 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 0 8px;b
       <label>Password<input id="aPass" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required></label>
       <label id="confWrap" class="hide">Confirm password<input id="aConf" type="password" autocomplete="new-password" placeholder="Repeat password"></label>
       <div class="err" id="aErr"></div>
+      <button type="button" class="btn ghost sm" id="forgot">Forgot password?</button>
       <button class="btn" id="aSubmit" type="submit">Log in</button>
     </form>
-    <p class="muted" style="margin-top:14px">Accounts are stored on this device only. Different device = create a new account.</p>
+    <p class="muted" style="margin-top:14px">Your account works on any device. Your data syncs securely to the cloud.</p>
   </div>
 </section>
 
 <!-- APP -->
 <main id="app" class="wrap hide">
   <header class="top">
-    <div class="who"><div class="avatar" id="avatar">A</div><div><b id="hello">Hello</b><div class="muted">ACPS HUB Student Portal</div></div></div>
+    <div class="who"><div class="avatar" id="avatar">A</div><div><b id="hello">Hello</b><div class="muted">ACPS HUB · <span id="sync">☁</span></div></div></div>
     <div style="display:flex;gap:8px"><button class="btn ghost sm hide" id="installBtn">⬇ Install app</button><button class="btn ghost sm" id="logoutBtn">Log out</button></div>
   </header>
   <div class="quote" id="quote"></div>
@@ -137,15 +139,27 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 0 8px;b
       <div class="item" style="display:grid"><div class="t"><b>Accent colour</b></div><div class="swatches" id="swatches"></div></div>
       <div class="item"><div class="t"><b>Install app</b><span class="muted" id="installHint">Add ACPS HUB to your home screen / desktop</span></div><button class="btn sm" id="installBtn2">Install</button></div>
       <div class="item"><div class="t"><b>Export my data</b><span class="muted">Download a backup (JSON)</span></div><button class="btn ghost sm" id="exportBtn">Export</button></div>
-      <div class="item"><div class="t"><b>Delete account</b><span class="muted">Removes this account and its data from this device</span></div><button class="btn danger" id="delBtn">Delete</button></div>
+      <div class="item"><div class="t"><b>Delete account</b><span class="muted">Permanently removes your account and data</span></div><button class="btn danger" id="delBtn">Delete</button></div>
     </div>
   </section>
 
-  <p class="muted" style="margin-top:14px">Your data is saved only in this browser on this device.</p>
+  <p class="muted" style="margin-top:14px">Your data is saved to your account and synced across your devices.</p>
   <footer>© 2026 ACPS HUB. All rights reserved.<br>Developed by Allan.<br>Building smart solutions for better communities through technology and innovation.</footer>
 </main>
 
-<script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,deleteUser} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc,deleteDoc} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+const fbApp=initializeApp({
+  apiKey:"AIzaSyDJDZzkC9h2xYgOqIJztMBtbaFeDZOKUsw",
+  authDomain:"acps-hub-project.firebaseapp.com",
+  projectId:"acps-hub-project",
+  storageBucket:"acps-hub-project.firebasestorage.app",
+  messagingSenderId:"436085607183",
+  appId:"1:436085607183:web:626fa11d3cd2682e240c7a"
+});
+const auth=getAuth(fbApp), db=getFirestore(fbApp);
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const LS={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},set(k,v){localStorage.setItem(k,JSON.stringify(v))}};
@@ -153,53 +167,93 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const QUOTES=["Discipline beats motivation. Show up today.","Small steps every day add up to big results.","Study now, celebrate later.","Consistency is your superpower.","Progress, not perfection."];
 const ACCENTS=["#34d399","#38bdf8","#a78bfa","#fb923c","#f472b6","#facc15"];
 
-let users=LS.get('acps_users',{}), email=LS.get('acps_session',null), D=null, mode='login', deferredInstall=null, swReg=null;
+let user=null, D=null, mode='login', deferredInstall=null, swReg=null;
 
 /* ---------- toast ---------- */
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
-/* ---------- password hashing ---------- */
-async function hashPw(pw,salt){
-  try{const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pw));return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')}
-  catch{return btoa(unescape(encodeURIComponent(salt+':'+pw)))}
-}
-
-/* ---------- auth ---------- */
+/* ---------- auth (Firebase) ---------- */
 function setMode(m){
   mode=m;const s=m==='signup';
   $('#tabLogin').classList.toggle('on',!s);$('#tabSignup').classList.toggle('on',s);
   $('#nameWrap').classList.toggle('hide',!s);$('#confWrap').classList.toggle('hide',!s);
+  $('#forgot').classList.toggle('hide',s);
   $('#aSubmit').textContent=s?'Create account':'Log in';
   $('#aPass').autocomplete=s?'new-password':'current-password';
   $('#aErr').textContent='';
 }
 $('#tabLogin').onclick=()=>setMode('login');$('#tabSignup').onclick=()=>setMode('signup');
+function fbErr(c){
+  return ({
+    'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong email or password.','auth/user-not-found':'Wrong email or password.',
+    'auth/email-already-in-use':'An account with this email already exists. Try logging in.',
+    'auth/weak-password':'Password must be at least 6 characters.','auth/invalid-email':'Please enter a valid email address.',
+    'auth/network-request-failed':'No internet connection. Please try again.','auth/too-many-requests':'Too many attempts. Wait a few minutes and try again.',
+    'auth/operation-not-allowed':'Email/Password sign-in is not enabled in Firebase.',
+    'auth/unauthorized-domain':'This website is not authorised in Firebase (add it under Authentication > Settings > Authorized domains).'
+  })[c]||('Something went wrong ('+(c||'unknown')+').');
+}
 $('#authForm').onsubmit=async e=>{
   e.preventDefault();
-  const em=$('#aEmail').value.trim().toLowerCase(), pw=$('#aPass').value, err=$('#aErr');
+  const em=$('#aEmail').value.trim().toLowerCase(), pw=$('#aPass').value, err=$('#aErr'), btn=$('#aSubmit');
   err.textContent='';
-  if(mode==='signup'){
-    const name=$('#aName').value.trim();
-    if(!name)return err.textContent='Please enter your name.';
-    if(pw.length<6)return err.textContent='Password must be at least 6 characters.';
-    if(pw!==$('#aConf').value)return err.textContent='Passwords do not match.';
-    if(users[em])return err.textContent='An account with this email already exists on this device.';
-    const salt=uid();users[em]={name,salt,hash:await hashPw(pw,salt)};
-    LS.set('acps_users',users);startSession(em);toast('Welcome, '+name.split(' ')[0]+'!');
-  }else{
-    const u=users[em];
-    if(!u||u.hash!==await hashPw(pw,u.salt))return err.textContent='Wrong email or password.';
-    startSession(em);
-  }
+  try{
+    if(mode==='signup'){
+      const name=$('#aName').value.trim();
+      if(!name){err.textContent='Please enter your name.';return}
+      if(pw.length<6){err.textContent='Password must be at least 6 characters.';return}
+      if(pw!==$('#aConf').value){err.textContent='Passwords do not match.';return}
+      btn.disabled=true;
+      const c=await createUserWithEmailAndPassword(auth,em,pw);
+      await updateProfile(c.user,{displayName:name});
+      user=auth.currentUser;setHello();toast('Welcome, '+name.split(' ')[0]+'!');
+    }else{
+      btn.disabled=true;
+      await signInWithEmailAndPassword(auth,em,pw);
+    }
+    $('#authForm').reset();
+  }catch(x){err.textContent=fbErr(x.code)}
+  finally{btn.disabled=false}
 };
-function startSession(em){email=em;LS.set('acps_session',em);$('#authForm').reset();showApp()}
-$('#logoutBtn').onclick=()=>{localStorage.removeItem('acps_session');email=null;D=null;showAuth()};
-function showAuth(){$('#app').classList.add('hide');$('#auth').classList.remove('hide');setMode('login')}
+$('#forgot').onclick=async()=>{
+  const em=$('#aEmail').value.trim(), err=$('#aErr');
+  if(!em){err.textContent='Type your email above first, then tap "Forgot password?".';return}
+  try{await sendPasswordResetEmail(auth,em);err.textContent='';toast('Reset link sent. Check your email (and spam).')}
+  catch(x){err.textContent=fbErr(x.code)}
+};
+$('#logoutBtn').onclick=async()=>{try{await pushCloud()}catch{}await signOut(auth)};
+function showAuth(){$('#boot').classList.add('hide');$('#app').classList.add('hide');$('#auth').classList.remove('hide');setMode('login')}
+function setHello(){
+  const name=(user&&(user.displayName||user.email))||'Student';
+  $('#hello').textContent='Hello, '+name.split(' ')[0];$('#avatar').textContent=name[0].toUpperCase();
+}
 
-/* ---------- data ---------- */
-const dkey=()=>'acps_data_'+email;
-function load(){D=LS.get(dkey(),null)||{gpa:[],rem:[],tt:[],bud:[],set:{accent:ACCENTS[0],theme:'dark'},fired:{}}; D.set=D.set||{accent:ACCENTS[0],theme:'dark'}; D.fired=D.fired||{}}
-function save(){LS.set(dkey(),D)}
+/* ---------- data (local cache + Firestore sync) ---------- */
+const dkey=()=>'acps_data_'+(user?user.uid:'guest');
+const blank=()=>({gpa:[],rem:[],tt:[],bud:[],set:{accent:ACCENTS[0],theme:'dark'},fired:{}});
+function normalize(x){x=Object.assign(blank(),x||{});x.set=Object.assign({accent:ACCENTS[0],theme:'dark'},x.set||{});x.fired=x.fired||{};return x}
+function setSync(s){const el=$('#sync');if(el)el.textContent=s==='ok'?'☁ Synced':s==='saving'?'☁ Saving…':'☁ Offline, will sync'}
+let saveT=null;
+function save(){LS.set(dkey(),D);LS.set(dkey()+'_t',Date.now());clearTimeout(saveT);saveT=setTimeout(()=>pushCloud().catch(()=>{}),800);setSync('saving')}
+async function pushCloud(){
+  if(!user||!D)return;
+  try{await setDoc(doc(db,'users',user.uid),{data:JSON.stringify(D),updated:LS.get(dkey()+'_t',Date.now())});setSync('ok')}
+  catch(e){setSync('err');throw e}
+}
+async function loadData(){
+  const local=LS.get(dkey(),null), localT=LS.get(dkey()+'_t',0);
+  D=normalize(local);
+  try{
+    const s=await getDoc(doc(db,'users',user.uid));
+    if(s.exists()){
+      const cloud=s.data();
+      if(!local||(cloud.updated||0)>localT){D=normalize(JSON.parse(cloud.data));LS.set(dkey(),D);LS.set(dkey()+'_t',cloud.updated||Date.now())}
+      else pushCloud().catch(()=>{});
+    }else if(local){pushCloud().catch(()=>{})}
+    setSync('ok');
+  }catch(e){setSync('err')}
+}
+window.addEventListener('online',()=>{if(user&&D)pushCloud().catch(()=>{})});
 function applyTheme(){
   const r=document.documentElement;r.style.setProperty('--accent',D.set.accent);r.dataset.theme=D.set.theme;
   document.querySelector('meta[name=theme-color]').content=D.set.theme==='light'?'#f1f5f9':'#0f172a';
@@ -207,10 +261,9 @@ function applyTheme(){
 
 /* ---------- app shell ---------- */
 function showApp(){
-  load();applyTheme();
-  $('#auth').classList.add('hide');$('#app').classList.remove('hide');
-  const name=users[email]?.name||'Student';
-  $('#hello').textContent='Hello, '+name.split(' ')[0];$('#avatar').textContent=name[0].toUpperCase();
+  applyTheme();
+  $('#boot').classList.add('hide');$('#auth').classList.add('hide');$('#app').classList.remove('hide');
+  setHello();
   $('#quote').textContent=QUOTES[new Date().getDate()%QUOTES.length];
   renderAll();buildSwatches();updateNotifUI();tab('gpa');
 }
@@ -279,11 +332,15 @@ function buildSwatches(){
 $('#swatches').onclick=e=>{const b=e.target.closest('.sw');if(!b)return;D.set.accent=b.dataset.c;save();applyTheme();buildSwatches()};
 $('#themeBtn').onclick=()=>{D.set.theme=D.set.theme==='dark'?'light':'dark';save();applyTheme()};
 $('#exportBtn').onclick=()=>{
-  const blob=new Blob([JSON.stringify({user:users[email]?.name,email,data:D},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({user:user.displayName,email:user.email,data:D},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acps-hub-backup.json';a.click();URL.revokeObjectURL(a.href)};
-$('#delBtn').onclick=()=>{
-  if(!confirm('Delete this account and all its data from this device? This cannot be undone.'))return;
-  localStorage.removeItem(dkey());delete users[email];LS.set('acps_users',users);localStorage.removeItem('acps_session');email=null;showAuth()};
+$('#delBtn').onclick=async()=>{
+  if(!confirm('Delete this account and ALL its data (on every device)? This cannot be undone.'))return;
+  try{
+    await deleteDoc(doc(db,'users',user.uid));await deleteUser(user);
+    localStorage.removeItem(dkey());localStorage.removeItem(dkey()+'_t');toast('Account deleted');
+  }catch(x){alert(x.code==='auth/requires-recent-login'?'For security, please log out, log in again, then delete your account.':'Could not delete account: '+(x.code||x.message))}
+};
 
 /* ---------- Notifications ---------- */
 function updateNotifUI(){
@@ -302,7 +359,7 @@ async function notify(title,body,tag){
   try{const r=swReg||await navigator.serviceWorker.ready;await r.showNotification(title,opts)}catch{try{new Notification(title,opts)}catch{}}
 }
 function tick(){
-  if(!D||!email)return;const now=new Date();let changed=false;
+  if(!D||!user)return;const now=new Date();let changed=false;
   D.rem.forEach(r=>{if(!r.done&&!D.fired['r'+r.id]&&new Date(r.when)<=now){D.fired['r'+r.id]=1;changed=true;notify('⏰ Reminder',r.text,'r'+r.id)}});
   const dn=DAYS[(now.getDay()+6)%7], today=now.toISOString().slice(0,10);
   D.tt.filter(c=>c.day===dn).forEach(c=>{
@@ -338,7 +395,10 @@ window.addEventListener('appinstalled',()=>{$('#installBtn').classList.add('hide
 
 /* ---------- boot ---------- */
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').then(r=>swReg=r).catch(()=>{});
-if(email&&users[email])showApp();else showAuth();
+onAuthStateChanged(auth,async u=>{
+  if(u){user=u;await loadData();showApp()}
+  else{user=null;D=null;showAuth()}
+});
 </script>
 </body>
 </html>
