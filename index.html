@@ -117,6 +117,18 @@ details p{margin-top:8px;color:var(--muted);font-size:.9rem;line-height:1.5}
 .chk .ok{color:var(--accent);font-weight:800;width:22px}
 .gcard{background:var(--bg2);border-radius:14px;padding:14px;display:grid;gap:6px;align-content:start}
 .gcard p{color:var(--muted);font-size:.88rem;line-height:1.45}
+.quote span{transition:opacity .35s;display:block}
+.row.gf{grid-template-columns:2fr 1fr 1fr 1fr 1fr auto}
+@media(max-width:640px){.row.gf{grid-template-columns:1fr 1fr}.row.gf .s2{grid-column:1/-1}}
+details.yr{padding:0;overflow:hidden;margin-top:10px;border:1px solid var(--line)}
+details.yr>summary{padding:14px 16px;font-size:1.05rem;list-style:none;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+details.yr>summary::-webkit-details-marker{display:none}
+details.yr>summary::before{content:'▸';color:var(--accent);transition:transform .2s}
+details.yr[open]>summary::before{transform:rotate(90deg)}
+details.yr .inner{padding:0 14px 14px}
+.semh{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline;margin-top:14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.semh b{color:var(--accent)}
+.yr .item{background:var(--card);border:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -161,7 +173,7 @@ details p{margin-top:8px;color:var(--muted);font-size:.9rem;line-height:1.5}
     <div class="who"><div class="avatar" id="avatar">A</div><div><b id="hello">Hello</b><div class="muted">ACPS HUB · <span id="sync">☁</span></div></div></div>
     <div style="display:flex;gap:8px"><button class="btn ghost sm hide" id="installBtn">⬇ Install app</button><button class="btn ghost sm" id="logoutBtn">Log out</button></div>
   </header>
-  <div class="quote" id="quote"></div>
+  <div class="quote" id="quote" title="Tap for another quote" style="cursor:pointer"><span id="quoteTxt"></span></div>
   <nav class="tabs" id="tabs">
     <button data-t="home" class="on">Home</button><button data-t="gpa">GPA</button><button data-t="asg">Assignments</button><button data-t="rem">Reminders</button><button data-t="tt">Timetable</button><button data-t="bud">Budget</button><button data-t="foc">Focus</button><button data-t="set">Settings</button><button data-t="help">Guide</button>
   </nav>
@@ -187,8 +199,8 @@ details p{margin-top:8px;color:var(--muted);font-size:.9rem;line-height:1.5}
   <!-- GPA -->
   <section id="p-gpa" class="card hide">
     <h2>GPA calculator</h2>
-    <form class="row c4" id="gpaForm" data-f="gpa"><input name="unit" placeholder="Unit name" required><input name="cr" type="number" min="1" max="20" step="1" placeholder="Credit hrs" required><input name="mk" type="number" min="0" max="100" step="0.1" placeholder="Marks %" required><div style="display:flex;gap:6px"><button class="btn sbtn" data-label="Add">Add</button><button type="button" class="btn ghost cbtn hide">Cancel</button></div></form>
-    <div class="stats"><div class="stat"><span class="muted">Your GPA (4.0 scale)</span><b id="gpaVal">0.00</b></div><div class="stat"><span class="muted">Credit hours</span><b id="gpaCr">0</b></div><div class="stat"><span class="muted">Class</span><b id="gpaCls" style="font-size:1.1rem">—</b></div></div>
+    <form class="row gf" id="gpaForm" data-f="gpa"><input name="unit" class="s2" placeholder="Unit name" required><select name="year" aria-label="Year"><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option><option value="5">Year 5</option></select><select name="sem" aria-label="Semester"><option value="1">Semester 1</option><option value="2">Semester 2</option></select><input name="cr" type="number" min="1" max="45" step="1" placeholder="Hours (max 45)" required><input name="mk" type="number" min="0" max="100" step="0.1" placeholder="Marks %" required><div style="display:flex;gap:6px"><button class="btn sbtn" data-label="Add">Add</button><button type="button" class="btn ghost cbtn hide">Cancel</button></div></form>
+    <div class="stats"><div class="stat"><span class="muted">Cumulative GPA (4.0)</span><b id="gpaVal">0.00</b></div><div class="stat"><span class="muted">Credit hours</span><b id="gpaCr">0</b></div><div class="stat"><span class="muted">Class</span><b id="gpaCls" style="font-size:1.1rem">—</b></div></div>
     <div class="list" id="gpaList"></div>
     <div class="btnrow"><button class="btn ghost sm" data-exp="gpa:png">🖼 Save image</button><button class="btn ghost sm" data-exp="gpa:pdf">📄 Save PDF</button><button class="btn ghost sm shareBtn hide" data-exp="gpa:share">↗ Share</button></div>
     <p class="muted" style="margin-top:12px">Scale used: 70+ = A (4), 60–69 = B (3), 50–59 = C (2), 40–49 = D (1), below 40 = E (0). Check it against your university's regulations.</p>
@@ -282,7 +294,7 @@ details p{margin-top:8px;color:var(--muted);font-size:.9rem;line-height:1.5}
     <h3 style="margin-top:20px">What each tab does</h3>
     <div class="grid2" style="margin-top:8px">
       <div class="gcard"><b>🏠 Home</b><p>Your day at a glance: classes, deadlines, reminders, GPA, balance and streak.</p><button class="btn ghost sm" data-go="home" style="justify-self:start">Open</button></div>
-      <div class="gcard"><b>🎓 GPA</b><p>Add units, credit hours and marks. Edit mistakes. Save or share a report as image or PDF.</p><button class="btn ghost sm" data-go="gpa" style="justify-self:start">Open</button></div>
+      <div class="gcard"><b>🎓 GPA</b><p>Add units by year and semester (Year 1 to 5). See semester, year and cumulative GPA. Save or share a report.</p><button class="btn ghost sm" data-go="gpa" style="justify-self:start">Open</button></div>
       <div class="gcard"><b>📝 Assignments</b><p>Track CATs, assignments, exams and projects with a countdown and a Done tick.</p><button class="btn ghost sm" data-go="asg" style="justify-self:start">Open</button></div>
       <div class="gcard"><b>⏰ Reminders</b><p>Anything with a date and time. The app rings and notifies you. Tap 🔔 to add a phone alarm.</p><button class="btn ghost sm" data-go="rem" style="justify-self:start">Open</button></div>
       <div class="gcard"><b>📚 Timetable</b><p>Your weekly classes. You get an alert 15 minutes before each one.</p><button class="btn ghost sm" data-go="tt" style="justify-self:start">Open</button></div>
@@ -329,7 +341,47 @@ const todayKey=()=>dateKey(new Date());
 const monthKey=()=>todayKey().slice(0,7);
 const fmtDT=s=>new Date(s).toLocaleString([], {dateStyle:'medium',timeStyle:'short'});
 const kes=n=>'KES '+n.toLocaleString(undefined,{maximumFractionDigits:2});
-const QUOTES=["Discipline beats motivation. Show up today.","Small steps every day add up to big results.","Study now, celebrate later.","Consistency is your superpower.","Progress, not perfection."];
+const QUOTES=[
+"Discipline beats motivation. Show up today.",
+"Small steps every day add up to big results.",
+"Study now, celebrate later.",
+"Consistency is your superpower.",
+"Progress, not perfection.",
+"You don't have to be perfect. You just have to keep going.",
+"One focused hour today beats ten worried hours tomorrow.",
+"Your future self is cheering for the work you do right now.",
+"Hard work is what makes a dream turn into a degree.",
+"Mistakes are proof that you are trying. Learn and move on.",
+"Don't watch the clock. Do what it does: keep going.",
+"Every expert was once a beginner. Keep learning.",
+"Tired? Rest, don't quit.",
+"A little revision every day is better than a lot of panic the night before.",
+"Your only competition is who you were yesterday.",
+"Believe you can, and you're halfway to passing.",
+"Success is the sum of small efforts repeated day after day.",
+"Start where you are. Use what you have. Do what you can.",
+"Bad grade today? It's a lesson, not a label.",
+"Dream big. Study smart. Stay humble.",
+"The pain of discipline is smaller than the pain of regret.",
+"You are capable of more than you think.",
+"Turn off the noise. Open the book.",
+"Focus on the process, and the results will follow.",
+"Today's effort is tomorrow's confidence.",
+"Don't wait for motivation. Build the habit.",
+"Strong students are made one lecture, one page, one question at a time.",
+"Ask questions. Curiosity is how clever people get clever.",
+"It always seems impossible until it's done.",
+"Plan your week, then work your plan.",
+"Sleep, water, books. In that order, often.",
+"Your family is proud of you. Make today count.",
+"Rome wasn't built in a day, and neither is a degree.",
+"Penye nia pana njia. (Where there's a will, there's a way.)",
+"Subira huvuta heri. (Patience brings good fortune.)",
+"Elimu ni ufunguo wa maisha. (Education is the key to life.)",
+"Bidii huleta mafanikio. (Hard work brings success.)",
+"Haba na haba hujaza kibaba. (Little by little fills the measure.)",
+"Mwanzo mgumu, mwisho mtamu. (A hard start, a sweet finish.)",
+"Finish what you start. Future you will say thank you."];
 const ACCENTS=["#34d399","#38bdf8","#a78bfa","#fb923c","#f472b6","#facc15"];
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const CATS={Food:'#fb923c',Transport:'#38bdf8',Airtime:'#a78bfa',Fees:'#f472b6',Rent:'#facc15',Books:'#34d399',Entertainment:'#f87171',Other:'#94a3b8'};
@@ -415,7 +467,7 @@ function setHello(){
 /* ---------- data (local cache + Firestore sync) ---------- */
 const dkey=()=>'acps_data_'+(user?user.uid:'guest');
 const blank=()=>({gpa:[],rem:[],tt:[],bud:[],asg:[],foc:[],set:{accent:ACCENTS[0],theme:'dark',limit:0,sound:true,toured:false},fired:{}});
-function normalize(x){x=Object.assign(blank(),x||{});x.set=Object.assign({accent:ACCENTS[0],theme:'dark',limit:0,sound:true,toured:false},x.set||{});x.fired=x.fired||{};return x}
+function normalize(x){x=Object.assign(blank(),x||{});x.set=Object.assign({accent:ACCENTS[0],theme:'dark',limit:0,sound:true,toured:false},x.set||{});x.gpa=x.gpa.map(u=>Object.assign({y:1,s:1},u));x.fired=x.fired||{};return x}
 function setSync(s){const el=$('#sync');if(el)el.textContent=s==='ok'?'☁ Synced':s==='saving'?'☁ Saving…':'☁ Offline, will sync'}
 let saveT=null;
 function save(){LS.set(dkey(),D);LS.set(dkey()+'_t',Date.now());clearTimeout(saveT);saveT=setTimeout(()=>pushCloud().catch(()=>{}),800);setSync('saving')}
@@ -443,12 +495,19 @@ function applyTheme(){
   document.querySelector('meta[name=theme-color]').content=D.set.theme==='light'?'#f1f5f9':'#0f172a';
 }
 
+/* ---------- rotating quotes ---------- */
+let qIv=null,qI=0;
+function showQuote(i){const el=$('#quoteTxt');el.style.opacity=0;setTimeout(()=>{qI=((i%QUOTES.length)+QUOTES.length)%QUOTES.length;el.textContent=QUOTES[qI];el.style.opacity=1},300)}
+function runQuotes(){clearInterval(qIv);qIv=setInterval(()=>{if(!document.hidden)showQuote(qI+1)},12000)}
+function startQuotes(){qI=Math.floor(Math.random()*QUOTES.length);$('#quoteTxt').textContent=QUOTES[qI];runQuotes()}
+$('#quote').onclick=()=>{showQuote(qI+1);runQuotes()};
+
 /* ---------- app shell ---------- */
 function showApp(){
   applyTheme();
   $('#boot').classList.add('hide');$('#auth').classList.add('hide');$('#app').classList.remove('hide');
   setHello();
-  $('#quote').textContent=QUOTES[new Date().getDate()%QUOTES.length];
+  startQuotes();
   $('#bMonth').value=monthKey();$('#bLimit').value=D.set.limit||'';
   fillCats();$('#budForm').elements.date.value=todayKey();
   initTimer();renderAll();buildSwatches();updateNotifUI();rSound();tab('home');
@@ -488,17 +547,33 @@ function upsert(n,arr,obj){
 const fv=f=>n=>f.elements[n].value;
 $$('.cbtn').forEach(b=>b.onclick=()=>exitEdit(b.closest('form').dataset.f));
 
-/* ---------- GPA ---------- */
+/* ---------- GPA (by year and semester) ---------- */
 const pts=m=>m>=70?4:m>=60?3:m>=50?2:m>=40?1:0;
 const grade=m=>m>=70?'A':m>=60?'B':m>=50?'C':m>=40?'D':'E';
-function gpaCalc(){const tc=D.gpa.reduce((a,x)=>a+x.cr,0),tp=D.gpa.reduce((a,x)=>a+x.cr*pts(x.mk),0),g=tc?tp/tc:0;
+function gpaOf(a){const c=a.reduce((s,x)=>s+x.cr,0),p=a.reduce((s,x)=>s+x.cr*pts(x.mk),0);return {c,g:c?p/c:0,n:a.length}}
+function gpaCalc(){const {c:tc,g}=gpaOf(D.gpa);
   return {tc,g,cls:!tc?'—':g>=3.5?'First Class':g>=3?'Second Upper':g>=2?'Second Lower':g>=1?'Pass':'Fail'}}
-$('#gpaForm').onsubmit=e=>{e.preventDefault();const v=fv(e.target);
-  upsert('gpa','gpa',{unit:v('unit').trim(),cr:+v('cr'),mk:+v('mk')});exitEdit('gpa');renderAll()};
+const openY={};
+document.addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details.yr'))openY[+d.dataset.y]=d.open},true);
+$('#gpaForm').onsubmit=e=>{e.preventDefault();const f=e.target,v=fv(f),y=+v('year'),s=+v('sem'),cr=+v('cr'),wasEdit=!!EDIT.gpa;
+  if(!(cr>=1&&cr<=45)){toast('Credit hours must be between 1 and 45');return}
+  upsert('gpa','gpa',{unit:v('unit').trim(),y,s,cr,mk:+v('mk')});openY[y]=true;exitEdit('gpa');
+  f.elements.year.value=y;f.elements.sem.value=s;renderAll();
+  if(!wasEdit)f.elements.unit.focus({preventScroll:true})};
+const unitRow=x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.cr} hrs · ${x.mk}% · <span class="pill">${grade(x.mk)}</span></span></div><div class="acts"><button class="btn ghost sm" data-edit="gpa:${x.id}">Edit</button><button class="btn danger" data-del="gpa:${x.id}">✕</button></div></div>`;
 function rGpa(){
   const {tc,g,cls}=gpaCalc();
   $('#gpaVal').textContent=g.toFixed(2);$('#gpaCr').textContent=tc;$('#gpaCls').textContent=cls;
-  $('#gpaList').innerHTML=D.gpa.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.cr} hrs · ${x.mk}% · <span class="pill">${grade(x.mk)}</span></span></div><div class="acts"><button class="btn ghost sm" data-edit="gpa:${x.id}">Edit</button><button class="btn danger" data-del="gpa:${x.id}">✕</button></div></div>`).join('')||'<p class="muted">No units yet. Add your first one above.</p>';
+  const maxY=Math.max(4,D.set.y5?5:0,...D.gpa.map(x=>x.y));let html='';
+  for(let y=1;y<=maxY;y++){
+    const ya=D.gpa.filter(x=>x.y===y),yg=gpaOf(ya),open=openY[y]!==undefined?openY[y]:(ya.length>0||(y===1&&!D.gpa.length));
+    html+=`<details class="yr" data-y="${y}" ${open?'open':''}><summary><b>Year ${y}</b><span class="muted">${ya.length?`· Year GPA ${yg.g.toFixed(2)} · ${yg.c} hrs`:'· no units yet'}</span></summary><div class="inner">`;
+    [1,2].forEach(s=>{const sa=ya.filter(x=>x.s===s),sg=gpaOf(sa);
+      html+=`<div class="semh"><b>Semester ${s}</b><span class="muted">${sa.length?`GPA ${sg.g.toFixed(2)} · ${sg.c} hrs · ${sa.length} unit${sa.length>1?'s':''}`:'No units yet'}</span></div><div class="list" style="margin-top:8px">${sa.map(unitRow).join('')}</div>`});
+    html+='</div></details>';
+  }
+  if(maxY<5)html+='<div class="btnrow"><button class="btn ghost sm" data-y5="1">＋ Add Year 5</button></div>';
+  $('#gpaList').innerHTML=html;
 }
 
 /* ---------- Assignments ---------- */
@@ -645,6 +720,7 @@ function rHome(){
 
 /* ---------- delegated clicks ---------- */
 document.addEventListener('click',e=>{
+  if(e.target.closest('[data-y5]')){D.set.y5=true;save();renderAll();return}
   const go=e.target.closest('[data-go]');if(go){tab(go.dataset.go);window.scrollTo({top:0,behavior:'smooth'});return}
   const ic=e.target.closest('[data-ics]');
   if(ic){const [k,id]=ic.dataset.ics.split(':'),x=D[k].find(y=>y.id===id);if(x){if(k==='rem')icsDownload(x.text,x.when,[0],15);else icsDownload(x.kind+': '+x.title,x.due,[1440,60],30)}return}
@@ -656,7 +732,7 @@ document.addEventListener('click',e=>{
   if(ad){const r=D.asg.find(x=>x.id===ad.dataset.adone);if(r){r.done=!r.done;save();renderAll()}return}
   const ed=e.target.closest('[data-edit]');
   if(ed){const [k,id]=ed.dataset.edit.split(':'),x=D[k].find(y=>y.id===id);if(!x)return;
-    if(k==='gpa')startEdit('gpa',id,{unit:x.unit,cr:x.cr,mk:x.mk});
+    if(k==='gpa')startEdit('gpa',id,{unit:x.unit,year:x.y||1,sem:x.s||1,cr:x.cr,mk:x.mk});
     if(k==='rem')startEdit('rem',id,{text:x.text,when:x.when});
     if(k==='tt')startEdit('tt',id,{day:x.day,start:x.start,end:x.end,unit:x.unit});
     if(k==='asg')startEdit('asg',id,{title:x.title,unit:x.unit||'',kind:x.kind,due:x.due});
@@ -680,17 +756,22 @@ function footer(x,W,H){x.fillStyle='#64748b';x.font='13px Arial';x.textAlign='ce
 function reportCanvas(which){
   const name=(user&&(user.displayName||user.email))||'Student',dt=new Date().toLocaleDateString([], {dateStyle:'long'});
   if(which==='gpa'){
-    const {g,tc,cls}=gpaCalc(),H=362+Math.max(D.gpa.length,1)*44,{c,x,W}=makeCanvas(H);
+    const {g,tc,cls}=gpaCalc(),groups=[];
+    for(let yy=1;yy<=5;yy++)[1,2].forEach(ss=>{const a=D.gpa.filter(r=>r.y===yy&&r.s===ss);if(a.length)groups.push(Object.assign({y:yy,s:ss,a},gpaOf(a)))});
+    const H=150+40+(groups.length?groups.length*46+D.gpa.length*38:44)+30+90+60,{c,x,W}=makeCanvas(H);
     header(x,W,'GPA Report',name+' · '+dt);
-    x.fillStyle='#0f172a';x.font='bold 15px Arial';let y=160;
-    [['Unit',40],['Credits',520],['Marks',640],['Grade',770]].forEach(([t,px])=>x.fillText(t,px,y));
-    y+=14;x.fillStyle='#cbd5e1';x.fillRect(40,y,W-80,2);y+=8;
-    D.gpa.forEach((r,i)=>{if(i%2===0){x.fillStyle='#f1f5f9';x.fillRect(40,y,W-80,44)}
-      x.fillStyle='#0f172a';x.font='17px Arial';x.fillText(fit(x,r.unit,440),52,y+28);x.fillText(String(r.cr),520,y+28);x.fillText(r.mk+'%',640,y+28);x.font='bold 17px Arial';x.fillText(grade(r.mk),770,y+28);y+=44});
-    if(!D.gpa.length){x.fillStyle='#64748b';x.font='17px Arial';x.fillText('No units added yet.',52,y+28);y+=44}
+    let y=150;x.fillStyle='#0f172a';x.font='bold 15px Arial';
+    [['Unit',52],['Credits',560],['Marks',680],['Grade',790]].forEach(([t,px])=>x.fillText(t,px,y+18));
+    y+=30;x.fillStyle='#cbd5e1';x.fillRect(40,y,W-80,2);y+=10;
+    groups.forEach(gr=>{
+      x.fillStyle='#e2e8f0';x.fillRect(40,y,W-80,36);x.fillStyle='#0f172a';x.font='bold 17px Arial';x.fillText('Year '+gr.y+' · Semester '+gr.s,52,y+24);
+      x.textAlign='right';x.fillStyle='#334155';x.font='15px Arial';x.fillText('GPA '+gr.g.toFixed(2)+' · '+gr.c+' hrs',W-52,y+24);x.textAlign='left';y+=36;
+      gr.a.forEach(r=>{x.fillStyle='#0f172a';x.font='16px Arial';x.fillText(fit(x,r.unit,480),52,y+26);x.fillText(String(r.cr),560,y+26);x.fillText(r.mk+'%',680,y+26);x.font='bold 16px Arial';x.fillText(grade(r.mk),790,y+26);y+=38});
+      y+=10});
+    if(!groups.length){x.fillStyle='#64748b';x.font='17px Arial';x.fillText('No units added yet.',52,y+28);y+=44}
     y+=30;x.fillStyle='#0f172a';x.beginPath();x.roundRect(40,y,W-80,90,16);x.fill();
     x.fillStyle=D.set.accent;x.font='bold 40px Arial';x.fillText(g.toFixed(2),64,y+58);
-    x.fillStyle='#fff';x.font='bold 18px Arial';x.fillText(cls,200,y+40);x.fillStyle='#94a3b8';x.font='15px Arial';x.fillText(tc+' credit hours · 4.0 scale',200,y+66);
+    x.fillStyle='#fff';x.font='bold 18px Arial';x.fillText('Cumulative GPA · '+cls,200,y+40);x.fillStyle='#94a3b8';x.font='15px Arial';x.fillText(tc+' credit hours · 4.0 scale',200,y+66);
     footer(x,W,H);return c;
   }
   const days=DAYS.map(d=>[d,D.tt.filter(r=>r.day===d).sort((a,b)=>a.start.localeCompare(b.start))]).filter(a=>a[1].length);
@@ -827,7 +908,7 @@ function icsDownload(title,startISO,alarmMins,durMin){
 /* ---------- Guide: tour + checklist ---------- */
 const TOUR=[
 {t:'home',h:'Welcome to ACPS HUB 👋',p:"This is your Home screen. It shows today's classes, deadlines, reminders, GPA, balance and focus streak at a glance."},
-{t:'gpa',h:'GPA',p:'Add each unit with its credit hours and marks. Your GPA updates instantly. Use Edit to fix mistakes and Save image or PDF to share it.'},
+{t:'gpa',h:'GPA',p:'Add each unit under its year and semester, with credit hours (up to 45) and marks. You get a GPA for every semester, every year and your cumulative GPA. Use Edit to fix mistakes and Save image or PDF to share it.'},
 {t:'asg',h:'Assignments & exams',p:'Track CATs, assignments, exams and projects with a live countdown. Tick Done when you finish.'},
 {t:'rem',h:'Reminders',p:'Set a date and time and the app rings and notifies you. Tap the 🔔 button to also add a phone alarm.'},
 {t:'tt',h:'Timetable',p:'Add your classes by day. You get an alert 15 minutes before each one.'},
