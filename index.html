@@ -148,6 +148,7 @@ details.yr .inner{padding:0 14px 14px}
 .kv{display:grid;grid-template-columns:130px 1fr;gap:6px 12px;font-size:.9rem}.kv span:nth-child(odd){color:var(--muted)}
 .kv span{overflow-wrap:anywhere}
 .note{padding:10px 14px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);font-size:.85rem;line-height:1.45;margin-top:12px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
 </style>
 </head>
 <body>
@@ -164,7 +165,7 @@ details.yr .inner{padding:0 14px 14px}
       <label>Email<input id="aEmail" type="email" autocomplete="email" placeholder="you@school.ac.ke" required></label>
       <label>Password<div class="pw"><input id="aPass" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required><button type="button" class="eye" data-eye="aPass">Show</button></div></label>
       <label id="confWrap" class="hide">Confirm password<div class="pw"><input id="aConf" type="password" autocomplete="new-password" placeholder="Repeat password"><button type="button" class="eye" data-eye="aConf">Show</button></div><span class="match" id="aMatch"></span></label>
-      <label id="agreeWrap" class="chkrow hide"><input type="checkbox" id="aAgree"><span>Privacy & Data protection.</span></label>
+      <label id="agreeWrap" class="chkrow hide"><input type="checkbox" id="aAgree"><span>I understand that ACPS HUB administrators can view my account details, student profile and study data (never my password) to support and improve the service.</span></label>
       <div class="err" id="aErr"></div>
       <button type="button" class="btn ghost sm" id="forgot">Forgot password?</button>
       <button class="btn" id="aSubmit" type="submit">Log in</button>
@@ -204,6 +205,7 @@ details.yr .inner{padding:0 14px 14px}
   <!-- HOME -->
   <section id="p-home" class="card">
     <h2 id="homeTitle">Today</h2>
+    <div id="hProfile"></div>
     <div class="stats">
       <div class="stat"><span class="muted">GPA</span><b id="hGpa">0.00</b></div>
       <div class="stat"><span class="muted">Balance</span><b id="hBal">0</b></div>
@@ -222,6 +224,7 @@ details.yr .inner{padding:0 14px 14px}
   <!-- GPA -->
   <section id="p-gpa" class="card hide">
     <h2>GPA calculator</h2>
+    <p class="muted" id="gpaProfile" style="margin:-6px 0 10px"></p>
     <form class="row gf" id="gpaForm" data-f="gpa"><input name="unit" class="s2" placeholder="Unit name" required><select name="year" aria-label="Year"><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option><option value="5">Year 5</option></select><select name="sem" aria-label="Semester"><option value="1">Semester 1</option><option value="2">Semester 2</option></select><input name="cr" type="number" min="1" max="45" step="1" placeholder="Credit hrs" required><input name="mk" type="number" min="0" max="100" step="0.1" placeholder="Marks %" required><div style="display:flex;gap:6px"><button class="btn sbtn" data-label="Add">Add</button><button type="button" class="btn ghost cbtn hide">Cancel</button></div></form>
     <p class="muted" id="gpaHint" style="margin-top:8px"></p>
     <div class="stats"><div class="stat"><span class="muted">Cumulative GPA (4.0)</span><b id="gpaVal">0.00</b></div><div class="stat"><span class="muted">Credit hours</span><b id="gpaCr">0</b></div><div class="stat"><span class="muted">Class</span><b id="gpaCls" style="font-size:1.1rem">—</b></div></div>
@@ -303,7 +306,17 @@ details.yr .inner{padding:0 14px 14px}
   <!-- SETTINGS -->
   <section id="p-set" class="card hide">
     <h2>Settings</h2>
-    <div class="list">
+    <h3>My student profile</h3>
+    <form id="profForm" class="pgrid">
+      <label>Institution<input name="institution" placeholder="e.g. University of Nairobi" maxlength="120"></label>
+      <label>Student name<input name="name" placeholder="Full name" maxlength="80" required></label>
+      <label>Reg No<input name="reg" placeholder="e.g. P15/1234/2022" maxlength="40"></label>
+      <label>Programme<input name="programme" placeholder="e.g. BSc Computer Science" maxlength="120"></label>
+      <label>Admission year<select name="adm"></select></label>
+      <div style="align-self:end"><button class="btn" type="submit">Save profile</button></div>
+    </form>
+    <h3 style="margin-top:24px">App settings</h3>
+    <div class="list" style="margin-top:8px">
       <div class="item"><div class="t"><b>Notifications</b><span class="muted">Alerts for reminders, assignments, classes and budget limit</span></div><button class="btn sm" id="notifBtn">Enable</button></div>
       <div class="item"><div class="t"><b>Theme</b><span class="muted">Dark or light</span></div><button class="btn ghost sm" id="themeBtn">Toggle</button></div>
       <div class="item"><div class="t"><b>Ring alarm sound</b><span class="muted">Loud alarm and vibration while the app is open</span></div><div class="acts"><button class="btn ghost sm" id="testAlarm">Test</button><button class="btn sm" id="soundBtn">On</button></div></div>
@@ -339,7 +352,7 @@ details.yr .inner{padding:0 14px 14px}
     <details><summary>Does it work offline?</summary><p>Yes. Changes are saved on your device and sync when you are back online.</p></details>
     <details><summary>How is my GPA calculated?</summary><p>70+ = A (4), 60-69 = B (3), 50-59 = C (2), 40-49 = D (1), below 40 = E (0), weighted by credit hours. Check this against your university's rules.</p></details>
     <details><summary>How do I install the app?</summary><p>Android or computer: tap Install app at the top. iPhone: tap Share, then Add to Home Screen.</p></details>
-    <details><summary>Who can see my data?</summary><p>Only you.</p></details>
+    <details><summary>Who can see my data?</summary><p>You can. Authorised ACPS HUB administrators can also view your account details (name, email, dates), your student profile (institution, registration number, programme, admission year) and study data such as units, grades, assignments, timetable and reminders, to support and improve the service. They see only budget totals, never your password, and they cannot change your data.</p></details>
   </section>
 
   </div></div>
@@ -347,7 +360,7 @@ details.yr .inner{padding:0 14px 14px}
   <footer>© 2026 ACPS HUB. All rights reserved.<br>Developed by Allan.<br>Building smart solutions for better communities through technology and innovation.</footer>
 </main>
 
-<div id="privacy" class="modal hide"><div class="sheet" style="text-align:left"><h2>Privacy notice</h2><p class="muted" style="margin:8px 0 14px;line-height:1.5">To support and improve ACPS HUB, Email us with your suggestons @allanmwanga18@gmail.com</p><div class="btnrow"><button class="btn" id="privOk">I understand</button></div></div></div>
+<div id="privacy" class="modal hide"><div class="sheet" style="text-align:left"><h2>Privacy notice</h2><p class="muted" style="margin:8px 0 14px;line-height:1.5">To support and improve ACPS HUB, authorised administrators can view your account details (name, email, dates), your student profile (institution, registration number, programme, admission year) and your study data such as units, grades, assignments, timetable and reminders. Administrators see only totals for your budget, never your password, and cannot change your data.</p><div class="btnrow"><button class="btn" id="privOk">I understand</button></div></div></div>
 <div id="ring" class="modal hide"><div class="sheet"><div class="bell">🔔</div><h2 id="ringH" style="margin-top:8px"></h2><p id="ringP" class="muted" style="margin:6px 0 16px"></p><div class="btnrow" style="justify-content:center"><button class="btn ghost hide" id="ringSnooze">Snooze 5 min</button><button class="btn" id="ringOk">Dismiss</button></div></div></div>
 <div id="tour" class="tour hide"><div class="sheet"><div class="muted" id="tourN"></div><h2 id="tourH" style="margin:4px 0 0"></h2><p id="tourP"></p><div class="btnrow" style="margin-top:0"><button class="btn ghost sm" id="tourSkip">Skip</button><span style="flex:1"></span><button class="btn ghost sm" id="tourBack">Back</button><button class="btn sm" id="tourNext">Next</button></div></div></div>
 <script type="module">
@@ -417,6 +430,7 @@ const QUOTES=[
 const ACCENTS=["#34d399","#38bdf8","#a78bfa","#fb923c","#f472b6","#facc15"];
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const CATS={Food:'#fb923c',Transport:'#38bdf8',Airtime:'#a78bfa',Fees:'#f472b6',Rent:'#facc15',Books:'#34d399',Entertainment:'#f87171',Other:'#94a3b8'};
+const PRIV_V=2;
 const TABS=['home','gpa','asg','rem','tt','bud','foc','set','help','adm'];
 
 let signedUpNow=false, isAdmin=false, user=null, D=null, mode='login', deferredInstall=null, swReg=null;
@@ -500,7 +514,7 @@ function setHello(){
 /* ---------- data (local cache + Firestore sync) ---------- */
 const dkey=()=>'acps_data_'+(user?user.uid:'guest');
 const blank=()=>({gpa:[],rem:[],tt:[],bud:[],asg:[],foc:[],set:{accent:ACCENTS[0],theme:'dark',limit:0,sound:true,toured:false},fired:{}});
-function normalize(x){x=Object.assign(blank(),x||{});x.set=Object.assign({accent:ACCENTS[0],theme:'dark',limit:0,sound:true,toured:false},x.set||{});x.gpa=x.gpa.map(u=>Object.assign({y:1,s:1},u));x.fired=x.fired||{};return x}
+function normalize(x){x=Object.assign(blank(),x||{});x.set=Object.assign({accent:ACCENTS[0],theme:'dark',limit:0,sound:true,toured:false},x.set||{});x.gpa=x.gpa.map(u=>Object.assign({y:1,s:1},u));x.profile=Object.assign({institution:'',name:'',reg:'',programme:'',adm:''},x.profile||{});x.fired=x.fired||{};return x}
 function setSync(s){const el=$('#sync');if(el)el.textContent=s==='ok'?'☁ Synced':s==='saving'?'☁ Saving…':'☁ Offline, will sync'}
 let saveT=null;
 function save(){LS.set(dkey(),D);LS.set(dkey()+'_t',Date.now());clearTimeout(saveT);saveT=setTimeout(()=>pushCloud().catch(()=>{}),800);setSync('saving')}
@@ -543,9 +557,9 @@ function showApp(){
   startQuotes();
   $('#bMonth').value=monthKey();$('#bLimit').value=D.set.limit||'';
   fillCats();$('#budForm').elements.date.value=todayKey();
-  initTimer();renderAll();buildSwatches();updateNotifUI();rSound();tab('home');
-  if(signedUpNow){D.set.privacyAck=true;save();signedUpNow=false}
-  if(!D.set.privacyAck)$('#privacy').classList.remove('hide');
+  fillYears();fillProfile();initTimer();renderAll();buildSwatches();updateNotifUI();rSound();tab('home');
+  if(signedUpNow){D.set.privacyV=PRIV_V;save();signedUpNow=false}
+  if(D.set.privacyV!==PRIV_V)$('#privacy').classList.remove('hide');
   else if(!D.set.toured)setTimeout(startTour,700);
   $('#admTab').classList.toggle('hide',!isAdmin);
   $('#installBtn2').closest('.item').classList.remove('hide');
@@ -594,32 +608,26 @@ const grade=m=>m>=70?'A':m>=60?'B':m>=50?'C':m>=40?'D':'E';
 function gpaOf(a){const c=a.reduce((s,x)=>s+x.cr,0),p=a.reduce((s,x)=>s+x.cr*pts(x.mk),0);return {c,g:c?p/c:0,n:a.length}}
 function gpaCalc(){const {c:tc,g}=gpaOf(D.gpa);
   return {tc,g,cls:!tc?'—':g>=3.5?'First Class':g>=3?'Second Upper':g>=2?'Second Lower':g>=1?'Pass':'Fail'}}
-const SEM_MAX=45;
-const semUsed=(y,s,except)=>D.gpa.filter(x=>x.y===y&&x.s===s&&x.id!==except).reduce((a,x)=>a+x.cr,0);
-function updateHint(){
-  const f=$('#gpaForm'),y=+f.elements.year.value,s=+f.elements.sem.value,used=semUsed(y,s,EDIT.gpa),typed=+f.elements.cr.value||0,left=SEM_MAX-used-typed,el=$('#gpaHint');
-  el.innerHTML=`Year ${y} · Semester ${s}: <b>${used}/${SEM_MAX}</b> credit hours used · `+(left<0?`<b style="color:var(--danger)">${-left} over the ${SEM_MAX}-hour limit</b>`:`<b>${left} left</b>`);
-}
+const UNIT_MAX=45;
+function updateHint(){const v=+$('#gpaForm').elements.cr.value||0,el=$('#gpaHint');el.innerHTML=v>UNIT_MAX?`<b style="color:var(--danger)">Credit hours per unit can be 1 to ${UNIT_MAX}.</b>`:`Credit hours: 1 to ${UNIT_MAX} per unit.`}
 ['input','change'].forEach(ev=>$('#gpaForm').addEventListener(ev,updateHint));
 const openY={};
 document.addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details.yr'))openY[+d.dataset.y]=d.open},true);
 $('#gpaForm').onsubmit=e=>{e.preventDefault();const f=e.target,v=fv(f),y=+v('year'),s=+v('sem'),cr=+v('cr'),wasEdit=!!EDIT.gpa;
-  if(!(cr>=1&&cr<=SEM_MAX)){toast('Credit hours must be between 1 and '+SEM_MAX);return}
-  const used=semUsed(y,s,EDIT.gpa),total=used+cr,cur=D.gpa.filter(x=>x.y===y&&x.s===s).reduce((a,x)=>a+x.cr,0);
-  if(total>SEM_MAX&&total>cur){toast(`Year ${y} Semester ${s} allows ${SEM_MAX} hours in total. You have ${used}, so only ${Math.max(0,SEM_MAX-used)} left.`);updateHint();return}
+  if(!(cr>=1&&cr<=UNIT_MAX)){toast('Credit hours must be between 1 and '+UNIT_MAX+' per unit');return}
   upsert('gpa','gpa',{unit:v('unit').trim(),y,s,cr,mk:+v('mk')});openY[y]=true;exitEdit('gpa');
   f.elements.year.value=y;f.elements.sem.value=s;renderAll();
   if(!wasEdit)f.elements.unit.focus({preventScroll:true})};
 const unitRow=x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.cr} hrs · ${x.mk}% · <span class="pill">${grade(x.mk)}</span></span></div><div class="acts"><button class="btn ghost sm" data-edit="gpa:${x.id}">Edit</button><button class="btn danger" data-del="gpa:${x.id}">✕</button></div></div>`;
 function rGpa(){
-  const {tc,g,cls}=gpaCalc();
+  const {tc,g,cls}=gpaCalc();$('#gpaProfile').textContent=profLine(profile())||'Add your student details under Settings → My student profile.';
   $('#gpaVal').textContent=g.toFixed(2);$('#gpaCr').textContent=tc;$('#gpaCls').textContent=cls;
   const maxY=Math.max(4,D.set.y5?5:0,...D.gpa.map(x=>x.y));let html='';
   for(let y=1;y<=maxY;y++){
     const ya=D.gpa.filter(x=>x.y===y),yg=gpaOf(ya),open=openY[y]!==undefined?openY[y]:(ya.length>0||(y===1&&!D.gpa.length));
     html+=`<details class="yr" data-y="${y}" ${open?'open':''}><summary><b>Year ${y}</b><span class="muted">${ya.length?`· Year GPA ${yg.g.toFixed(2)} · ${yg.c} hrs`:'· no units yet'}</span></summary><div class="inner">`;
     [1,2].forEach(s=>{const sa=ya.filter(x=>x.s===s),sg=gpaOf(sa);
-      html+=`<div class="semh"><b>Semester ${s}</b><span class="muted">${sa.length?`GPA ${sg.g.toFixed(2)} · ${sg.c}/${SEM_MAX} hrs${sg.c>SEM_MAX?' ⚠️':''} · ${sa.length} unit${sa.length>1?'s':''}`:'No units yet'}</span></div><div class="list" style="margin-top:8px">${sa.map(unitRow).join('')}</div>`});
+      html+=`<div class="semh"><b>Semester ${s}</b><span class="muted">${sa.length?`GPA ${sg.g.toFixed(2)} · ${sg.c} hrs · ${sa.length} unit${sa.length>1?'s':''}`:'No units yet'}</span></div><div class="list" style="margin-top:8px">${sa.map(unitRow).join('')}</div>`});
     html+='</div></details>';
   }
   if(maxY<5)html+='<div class="btnrow"><button class="btn ghost sm" data-y5="1">＋ Add Year 5</button></div>';
@@ -749,6 +757,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncTimer(
 /* ---------- Home dashboard ---------- */
 function rHome(){
   if(!D)return;
+  {const pf=profile(),rows=[['Student',pf.name],['Reg No',pf.reg],['Institution',pf.institution],['Programme',pf.programme],['Admission year',pf.adm]].filter(r=>r[1]);
+   $('#hProfile').innerHTML=pf.reg||pf.institution||pf.programme||pf.adm?`<div class="kv sub" style="margin-bottom:12px">${rows.map(r=>`<span>${r[0]}</span><span><b>${esc(r[1])}</b></span>`).join('')}</div>`:`<div class="alert warn">👤 Complete your student profile (institution, reg no, programme).<div class="btnrow"><button class="btn sm" data-go="set">Complete profile</button></div></div>`}
   const now=new Date(),dn=DAYS[(now.getDay()+6)%7];
   $('#homeTitle').textContent=now.toLocaleDateString([], {weekday:'long',day:'numeric',month:'long'});
   const {g,tc}=gpaCalc();$('#hGpa').textContent=g.toFixed(2);
@@ -804,13 +814,15 @@ function header(x,W,title,sub){
 }
 function footer(x,W,H){x.fillStyle='#64748b';x.font='13px Arial';x.textAlign='center';x.fillText('Generated by ACPS HUB · aliwanga.github.io/acps-hub-project',W/2,H-18);x.textAlign='left'}
 function reportCanvas(which){
-  const name=(user&&(user.displayName||user.email))||'Student',dt=new Date().toLocaleDateString([], {dateStyle:'long'});
+  const pfx=profile(),name=pfx.name||(user&&(user.displayName||user.email))||'Student',dt=new Date().toLocaleDateString([], {dateStyle:'long'});
   if(which==='gpa'){
     const {g,tc,cls}=gpaCalc(),groups=[];
     for(let yy=1;yy<=5;yy++)[1,2].forEach(ss=>{const a=D.gpa.filter(r=>r.y===yy&&r.s===ss);if(a.length)groups.push(Object.assign({y:yy,s:ss,a},gpaOf(a)))});
-    const H=150+40+(groups.length?groups.length*46+D.gpa.length*38:44)+30+90+60,{c,x,W}=makeCanvas(H);
-    header(x,W,'GPA Report',name+' · '+dt);
-    let y=150;x.fillStyle='#0f172a';x.font='bold 15px Arial';
+    const hasPf=!!(pfx.institution||pfx.reg||pfx.programme||pfx.adm),H=(hasPf?250:150)+40+(groups.length?groups.length*46+D.gpa.length*38:44)+30+90+60,{c,x,W}=makeCanvas(H);
+    header(x,W,'GPA Report',(pfx.institution?pfx.institution+' · ':'')+dt);
+    if(hasPf){x.fillStyle='#f1f5f9';x.beginPath();x.roundRect(40,136,W-80,100,14);x.fill();
+      [[[['Student',name],['Reg No',pfx.reg],['Admission year',pfx.adm]],56,170,230],[[['Institution',pfx.institution],['Programme',pfx.programme]],430,520,330]].forEach(([arr,lx,vx,mw])=>arr.forEach(([k,v],i)=>{const yy=168+i*26;x.font='13px Arial';x.fillStyle='#64748b';x.fillText(k,lx,yy);x.font='bold 15px Arial';x.fillStyle='#0f172a';x.fillText(fit(x,v||'—',mw),vx,yy)}))}
+    let y=hasPf?250:150;x.fillStyle='#0f172a';x.font='bold 15px Arial';
     [['Unit',52],['Credits',560],['Marks',680],['Grade',790]].forEach(([t,px])=>x.fillText(t,px,y+18));
     y+=30;x.fillStyle='#cbd5e1';x.fillRect(40,y,W-80,2);y+=10;
     groups.forEach(gr=>{
@@ -965,9 +977,10 @@ function matchHint(a,c,out){const x=$(a).value,y=$(c).value,el=$(out);
 ['#rPass','#rConf'].forEach(s=>$(s).addEventListener('input',()=>matchHint('#rPass','#rConf','#rMatch')));
 
 /* ---------- privacy notice (shown once) ---------- */
-$('#privOk').onclick=()=>{$('#privacy').classList.add('hide');D.set.privacyAck=true;save();if(!D.set.toured)setTimeout(startTour,400)};
+$('#privOk').onclick=()=>{$('#privacy').classList.add('hide');D.set.privacyV=PRIV_V;save();if(!D.set.toured)setTimeout(startTour,400)};
 
 /* ---------- Admin (read-only; allowed only by Firestore rules for UIDs listed in the "admins" collection) ---------- */
+const prof=u=>(u.D&&u.D.profile)||{};
 const ADM={users:[],sel:null,q:'',loaded:false,err:''};
 async function checkAdmin(){isAdmin=false;try{const s=await getDoc(doc(db,'admins',user.uid));isAdmin=s.exists()}catch{}}
 function ago(t){if(!t)return '—';const d=Date.now()-new Date(t).getTime();if(isNaN(d))return '—';const m=Math.floor(d/6e4);if(m<2)return 'just now';if(m<60)return m+' min ago';const hr=Math.floor(m/60);if(hr<24)return hr+' hr ago';const dd=Math.floor(hr/24);return dd+' day'+(dd>1?'s':'')+' ago'}
@@ -989,22 +1002,22 @@ function rAdmin(){
   if(!ADM.loaded&&!ADM.err){loadUsers();return}
   if(ADM.err){box.innerHTML=`<p class="err">${esc(ADM.err)}</p><div class="btnrow"><button class="btn ghost sm" id="admRefresh">Retry</button></div>`;return}
   if(ADM.sel){const u=ADM.users.find(x=>x.id===ADM.sel);if(u){adminDetail(u);return}ADM.sel=null}
-  const q=ADM.q.toLowerCase(),L=ADM.users.filter(u=>!q||(u.name+' '+u.email).toLowerCase().includes(q));
+  const q=ADM.q.toLowerCase(),L=ADM.users.filter(u=>!q||(u.name+' '+u.email+' '+Object.values(prof(u)).join(' ')).toLowerCase().includes(q));
   const week=ADM.users.filter(u=>Date.now()-u.seen<7*864e5).length,units=ADM.users.reduce((a,u)=>a+(u.D?u.D.gpa.length:0),0);
   box.innerHTML=`<div class="stats"><div class="stat"><span class="muted">Users</span><b>${ADM.users.length}</b></div><div class="stat"><span class="muted">Active (7 days)</span><b>${week}</b></div><div class="stat"><span class="muted">Units recorded</span><b>${units}</b></div></div>
   <div class="row" style="grid-template-columns:1fr auto auto"><input id="admQ" placeholder="Search name or email" value="${esc(ADM.q)}"><button class="btn ghost sm" id="admRefresh">Refresh</button><button class="btn ghost sm" id="admCsv">Export CSV</button></div>
-  <div class="list">${L.map(u=>{const g=u.D?gpaOf(u.D.gpa):{g:0,n:0};return `<div class="ucard" data-u="${esc(u.id)}"><div class="t" style="min-width:0"><b>${esc(u.name||'(name appears after next login)')}</b><span class="muted" style="overflow-wrap:anywhere">${esc(u.email||u.id)}</span></div><div style="text-align:right;flex-shrink:0"><b style="color:var(--accent)">${g.g.toFixed(2)}</b><div class="muted">${g.n} units · ${ago(u.seen)}</div></div></div>`}).join('')||'<p class="muted">No users found.</p>'}</div>
+  <div class="list">${L.map(u=>{const g=u.D?gpaOf(u.D.gpa):{g:0,n:0};return `<div class="ucard" data-u="${esc(u.id)}"><div class="t" style="min-width:0"><b>${esc(u.name||'(name appears after next login)')}</b><span class="muted" style="overflow-wrap:anywhere">${esc(u.email||u.id)}${prof(u).reg?' · '+esc(prof(u).reg):''}</span></div><div style="text-align:right;flex-shrink:0"><b style="color:var(--accent)">${g.g.toFixed(2)}</b><div class="muted">${g.n} units · ${ago(u.seen)}</div></div></div>`}).join('')||'<p class="muted">No users found.</p>'}</div>
   <div class="note">🔒 Read-only access. Users are informed of administrator access in the privacy notice they accept. Passwords are never visible to anyone, and budget entries are shown only as totals.</div>`;
 }
 function adminDetail(u){
   const d=u.D||normalize({}),gc=gpaOf(d.gpa),inc=d.bud.filter(x=>x.type==='inc').reduce((a,x)=>a+x.amt,0),ex=d.bud.filter(x=>x.type==='exp').reduce((a,x)=>a+x.amt,0);
   let units='';
   for(let y=1;y<=5;y++)[1,2].forEach(s=>{const a=d.gpa.filter(x=>x.y===y&&x.s===s);if(!a.length)return;const g=gpaOf(a);
-    units+=`<div class="semh"><b>Year ${y} · Semester ${s}</b><span class="muted">GPA ${g.g.toFixed(2)} · ${g.c}/${SEM_MAX} hrs</span></div><div class="list" style="margin-top:6px">${a.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.cr} hrs · ${x.mk}%</span></div><span class="pill">${grade(x.mk)}</span></div>`).join('')}</div>`});
+    units+=`<div class="semh"><b>Year ${y} · Semester ${s}</b><span class="muted">GPA ${g.g.toFixed(2)} · ${g.c} hrs</span></div><div class="list" style="margin-top:6px">${a.map(x=>`<div class="item"><div class="t"><b>${esc(x.unit)}</b><span class="muted">${x.cr} hrs · ${x.mk}%</span></div><span class="pill">${grade(x.mk)}</span></div>`).join('')}</div>`});
   const list=(arr,f)=>arr.length?`<div class="list" style="margin-top:6px">${arr.map(f).join('')}</div>`:'<p class="muted">None.</p>';
   $('#admMain').innerHTML=`<div class="btnrow" style="margin-top:0"><button class="btn ghost sm" id="admBack">← All users</button></div>
   <h3 style="margin-top:14px">Account</h3>
-  <div class="kv sub"><span>Name</span><span>${esc(u.name||'—')}</span><span>Email</span><span>${esc(u.email||'—')}</span><span>User ID</span><span>${esc(u.id)}</span><span>Signed up</span><span>${fdate(u.joined)}</span><span>Last login</span><span>${fdate(u.lastLogin)}</span><span>Last active</span><span>${u.seen?fdate(u.seen)+' ('+ago(u.seen)+')':'—'}</span></div>
+  <div class="kv sub"><span>Name</span><span>${esc(u.name||'—')}</span><span>Email</span><span>${esc(u.email||'—')}</span><span>User ID</span><span>${esc(u.id)}</span><span>Student name</span><span>${esc(prof(u).name||'—')}</span><span>Institution</span><span>${esc(prof(u).institution||'—')}</span><span>Reg No</span><span>${esc(prof(u).reg||'—')}</span><span>Programme</span><span>${esc(prof(u).programme||'—')}</span><span>Admission year</span><span>${esc(prof(u).adm||'—')}</span><span>Signed up</span><span>${fdate(u.joined)}</span><span>Last login</span><span>${fdate(u.lastLogin)}</span><span>Last active</span><span>${u.seen?fdate(u.seen)+' ('+ago(u.seen)+')':'—'}</span></div>
   <div class="stats"><div class="stat"><span class="muted">Cumulative GPA</span><b>${gc.g.toFixed(2)}</b></div><div class="stat"><span class="muted">Credit hours</span><b>${gc.c}</b></div><div class="stat"><span class="muted">Focus streak</span><b>${streakOf(d.foc)} 🔥</b></div><div class="stat"><span class="muted">Focus sessions</span><b>${d.foc.length}</b></div></div>
   <h3>Units</h3>${units||'<p class="muted">No units yet.</p>'}
   <h3 style="margin-top:16px">Assignments &amp; exams</h3>${list([...d.asg].sort((a,b)=>a.due.localeCompare(b.due)),x=>`<div class="item ${x.done?'done':''}"><div class="t"><b>${esc(x.title)}</b><span class="muted">${esc(x.kind)}${x.unit?' · '+esc(x.unit):''} · ${fdate(x.due)}</span></div><span class="pill">${x.done?'Done':'Pending'}</span></div>`)}
@@ -1019,22 +1032,34 @@ $('#admMain').addEventListener('click',e=>{
   if(e.target.id==='admBack'){ADM.sel=null;rAdmin();return}
   if(e.target.id==='admRefresh'){ADM.loaded=false;ADM.err='';rAdmin();return}
   if(e.target.id==='admCsv'){
-    const q=v=>'"'+String(v).replace(/"/g,'""')+'"',rows=[['Name','Email','Signed up','Last login','Last active','Units','Credit hours','GPA']];
-    ADM.users.forEach(u=>{const g=u.D?gpaOf(u.D.gpa):{g:0,c:0,n:0};rows.push([u.name,u.email,u.joined,u.lastLogin,u.seen?new Date(u.seen).toISOString():'',g.n,g.c,g.g.toFixed(2)])});
+    const q=v=>'"'+String(v).replace(/"/g,'""')+'"',rows=[['Name','Email','Institution','Reg No','Programme','Admission year','Signed up','Last login','Last active','Units','Credit hours','GPA']];
+    ADM.users.forEach(u=>{const g=u.D?gpaOf(u.D.gpa):{g:0,c:0,n:0};rows.push([u.name,u.email,prof(u).institution||'',prof(u).reg||'',prof(u).programme||'',prof(u).adm||'',u.joined,u.lastLogin,u.seen?new Date(u.seen).toISOString():'',g.n,g.c,g.g.toFixed(2)])});
     saveBlob(new Blob([rows.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}),'acps-users.csv')}
 });
 $('#admMain').addEventListener('input',e=>{if(e.target.id==='admQ'){ADM.q=e.target.value;const pos=e.target.selectionStart;rAdmin();const i=$('#admQ');i.focus();i.setSelectionRange(pos,pos)}});
 
+/* ---------- Student profile ---------- */
+const PROFILE_KEYS=['institution','name','reg','programme','adm'];
+function profile(){const p=Object.assign({institution:'',name:'',reg:'',programme:'',adm:''},(D&&D.profile)||{});if(!p.name&&user)p.name=user.displayName||'';return p}
+function fillYears(){const y=new Date().getFullYear();let o='<option value="">Select year</option>';for(let i=y+1;i>=2000;i--)o+=`<option>${i}</option>`;$('#profForm').elements.adm.innerHTML=o}
+function fillProfile(){const p=profile(),f=$('#profForm'),sel=f.elements.adm;
+  if(p.adm&&![...sel.options].some(o=>o.value===String(p.adm)))sel.insertAdjacentHTML('beforeend',`<option>${esc(p.adm)}</option>`);
+  PROFILE_KEYS.forEach(k=>f.elements[k].value=p[k]||'')}
+$('#profForm').onsubmit=async e=>{e.preventDefault();const f=e.target;D.profile={};PROFILE_KEYS.forEach(k=>D.profile[k]=f.elements[k].value.trim());save();
+  if(D.profile.name&&user&&D.profile.name!==user.displayName){try{await updateProfile(auth.currentUser,{displayName:D.profile.name});user=auth.currentUser;setHello();pushCloud().catch(()=>{})}catch{}}
+  renderAll();toast('Profile saved ✓')};
+const profLine=p=>[p.name,p.reg,p.programme,p.institution,p.adm?'Admitted '+p.adm:''].filter(Boolean).join(' · ');
+
 /* ---------- Guide: tour + checklist ---------- */
 const TOUR=[
 {t:'home',h:'Welcome to ACPS HUB 👋',p:"This is your Home screen. It shows today's classes, deadlines, reminders, GPA, balance and focus streak at a glance."},
-{t:'gpa',h:'GPA',p:'Add each unit under its year and semester, with credit hours and marks. Each semester allows up to 45 credit hours in total, and the form shows how many you have left. You get a GPA for every semester, every year and your cumulative GPA. Use Edit to fix mistakes and Save image or PDF to share it.'},
+{t:'gpa',h:'GPA',p:'Add each unit under its year and semester, with credit hours and marks. Each unit can have 1 to 45 credit hours. You get a GPA for every semester, every year and your cumulative GPA. Use Edit to fix mistakes and Save image or PDF to share it.'},
 {t:'asg',h:'Assignments & exams',p:'Track CATs, assignments, exams and projects with a live countdown. Tick Done when you finish.'},
 {t:'rem',h:'Reminders',p:'Set a date and time and the app rings and notifies you. Tap the 🔔 button to also add a phone alarm.'},
 {t:'tt',h:'Timetable',p:'Add your classes by day. You get an alert 15 minutes before each one.'},
 {t:'bud',h:'Budget',p:'Record income and expenses by category, set a monthly limit and watch the chart.'},
 {t:'foc',h:'Focus timer',p:'Study in timed sessions with short breaks. Finish one every day to grow your streak 🔥'},
-{t:'set',h:'Settings',p:'Turn on notifications and the alarm sound, install the app, change theme and colours, or back up your data.'},
+{t:'set',h:'Settings',p:'Fill in your student profile (institution, reg no, programme, admission year), turn on notifications and the alarm sound, install the app, change theme and colours, or back up your data.'},
 {t:'help',h:'Need help later?',p:'The Guide tab has a checklist, explanations and answers. You can replay this tour any time.'}];
 let tourI=0;
 function startTour(){tourI=0;$('#tour').classList.remove('hide');showTour()}
@@ -1049,7 +1074,7 @@ $('#tourBack').onclick=()=>{if(tourI>0){tourI--;showTour()}};
 $('#tourSkip').onclick=endTour;$('#tourBtn').onclick=startTour;
 function rGuide(){
   if(!D)return;
-  const it=[['Add your first unit',D.gpa.length>0,'gpa'],['Add a class to your timetable',D.tt.length>0,'tt'],['Add an assignment or exam',D.asg.length>0,'asg'],['Set a reminder',D.rem.length>0,'rem'],['Record a budget entry',D.bud.length>0,'bud'],['Set a monthly spending limit',(D.set.limit||0)>0,'bud'],['Complete a focus session',D.foc.length>0,'foc'],['Turn on notifications',('Notification' in window)&&Notification.permission==='granted','set']];
+  const it=[['Complete your student profile',!!(profile().reg||profile().institution||profile().programme),'set'],['Add your first unit',D.gpa.length>0,'gpa'],['Add a class to your timetable',D.tt.length>0,'tt'],['Add an assignment or exam',D.asg.length>0,'asg'],['Set a reminder',D.rem.length>0,'rem'],['Record a budget entry',D.bud.length>0,'bud'],['Set a monthly spending limit',(D.set.limit||0)>0,'bud'],['Complete a focus session',D.foc.length>0,'foc'],['Turn on notifications',('Notification' in window)&&Notification.permission==='granted','set']];
   const n=it.filter(i=>i[1]).length;
   $('#checklist').innerHTML=`<div class="muted">${n} of ${it.length} done</div><div class="bar" style="margin:6px 0 10px"><i style="width:${n/it.length*100}%"></i></div><div class="list" style="margin-top:0">${it.map(i=>`<div class="item chk"><span class="ok">${i[1]?'✓':'○'}</span><span style="flex:1;${i[1]?'opacity:.6;text-decoration:line-through':''}">${i[0]}</span>${i[1]?'':`<button class="btn ghost sm" data-go="${i[2]}">Go</button>`}</div>`).join('')}</div>`;
 }
